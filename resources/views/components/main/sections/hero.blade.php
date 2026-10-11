@@ -21,7 +21,7 @@ new class extends Component
     public function mount($data = [], $media = null)
     {
         $this->data = is_array($data) ? $data : [];
-        $this->uid = 'bk-hero-' . \Illuminate\Support\Str::random(6);
+        $this->uid = 'sl-hero-' . \Illuminate\Support\Str::random(6);
 
         $media = collect($media ?? []);
         $main = $media->firstWhere('collection', 'hero_media');
@@ -73,7 +73,7 @@ new class extends Component
         $title = trim((string) ($this->data['heading'] ?? ''));
         $highlight = trim((string) ($this->data['highlight'] ?? ''));
 
-        $wrap = fn ($text) => '<span class="bk-hero-gradient">' . e($text) . '</span>';
+        $wrap = fn ($text) => '<span class="sl-hero-gradient">' . e($text) . '</span>';
 
         if ($title === '') {
             return $highlight !== '' ? $wrap($highlight) : '';
@@ -110,8 +110,8 @@ new class extends Component
 
 <div>
     <style>
-        #{{ $uid }} { --bk-hero-h: {{ $hMobile }}px; }
-        @media (min-width: 1024px) { #{{ $uid }} { --bk-hero-h: {{ $hDesktop }}px; } }
+        #{{ $uid }} { --sl-hero-h: {{ $hMobile }}px; }
+        @media (min-width: 1024px) { #{{ $uid }} { --sl-hero-h: {{ $hDesktop }}px; } }
 
         /* ---------- ورود مرحله‌ای ---------- */
         #{{ $uid }} [data-reveal] {
@@ -124,59 +124,59 @@ new class extends Component
         #{{ $uid }}.is-in [data-reveal] { opacity: 1; transform: none; filter: none; }
 
         /* ---------- قاب رسانه: باز شدن با clip-path + زوم آرام ---------- */
-        #{{ $uid }} .bk-hero-frame { clip-path: inset(12% 12% 12% 12% round 2.5rem); transition: clip-path 1.4s cubic-bezier(.7,0,.2,1) .15s; }
-        #{{ $uid }}.is-in .bk-hero-frame { clip-path: inset(0 0 0 0 round 2.5rem); }
-        #{{ $uid }} .bk-hero-media { transform: scale(1.18); transition: transform 1.8s cubic-bezier(.2,.7,.2,1) .15s; }
-        #{{ $uid }}.is-in .bk-hero-media { transform: scale(1.04); animation: bkKenBurns 22s ease-in-out 2s infinite alternate; }
-        @keyframes bkKenBurns { from { transform: scale(1.04) translate3d(0,0,0); } to { transform: scale(1.14) translate3d(-1.5%, -1%, 0); } }
+        #{{ $uid }} .sl-hero-frame { clip-path: inset(12% 12% 12% 12% round 2.5rem); transition: clip-path 1.4s cubic-bezier(.7,0,.2,1) .15s; }
+        #{{ $uid }}.is-in .sl-hero-frame { clip-path: inset(0 0 0 0 round 2.5rem); }
+        #{{ $uid }} .sl-hero-media { transform: scale(1.18); transition: transform 1.8s cubic-bezier(.2,.7,.2,1) .15s; }
+        #{{ $uid }}.is-in .sl-hero-media { transform: scale(1.04); animation: slKenBurns 22s ease-in-out 2s infinite alternate; }
+        @keyframes slKenBurns { from { transform: scale(1.04) translate3d(0,0,0); } to { transform: scale(1.14) translate3d(-1.5%, -1%, 0); } }
 
         /* ---------- متن گرادیان متحرک ---------- */
-        #{{ $uid }} .bk-hero-gradient {
+        #{{ $uid }} .sl-hero-gradient {
             background: linear-gradient(110deg, var(--color-brown-600, #8b5a2b) 0%, var(--color-brown-400, #c08a5b) 35%, #d4a464 55%, var(--color-brown-600, #8b5a2b) 100%);
             background-size: 220% 100%;
             -webkit-background-clip: text; background-clip: text; color: transparent;
-            animation: bkShine 6s linear infinite;
+            animation: slShine 6s linear infinite;
         }
-        @keyframes bkShine { to { background-position: -220% 0; } }
+        @keyframes slShine { to { background-position: -220% 0; } }
 
         /* ---------- لکه‌های رنگی شناور ---------- */
-        #{{ $uid }} .bk-hero-blob { position: absolute; border-radius: 9999px; filter: blur(60px); opacity: .45; pointer-events: none; animation: bkFloat 14s ease-in-out infinite; }
-        #{{ $uid }} .bk-hero-blob.b2 { animation-duration: 18s; animation-delay: -6s; }
-        #{{ $uid }} .bk-hero-blob.b3 { animation-duration: 22s; animation-delay: -11s; }
-        @keyframes bkFloat {
+        #{{ $uid }} .sl-hero-blob { position: absolute; border-radius: 9999px; filter: blur(60px); opacity: .45; pointer-events: none; animation: slFloat 14s ease-in-out infinite; }
+        #{{ $uid }} .sl-hero-blob.b2 { animation-duration: 18s; animation-delay: -6s; }
+        #{{ $uid }} .sl-hero-blob.b3 { animation-duration: 22s; animation-delay: -11s; }
+        @keyframes slFloat {
             0%, 100% { transform: translate3d(0, 0, 0) scale(1); }
             33% { transform: translate3d(30px, -25px, 0) scale(1.08); }
             66% { transform: translate3d(-20px, 20px, 0) scale(.95); }
         }
 
         /* ---------- کارت‌های شناور ---------- */
-        #{{ $uid }} .bk-hero-bob { animation: bkBob 5.5s ease-in-out infinite; }
-        #{{ $uid }} .bk-hero-bob.alt { animation-duration: 6.5s; animation-delay: -2s; }
-        @keyframes bkBob { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -10px, 0); } }
+        #{{ $uid }} .sl-hero-bob { animation: slBob 5.5s ease-in-out infinite; }
+        #{{ $uid }} .sl-hero-bob.alt { animation-duration: 6.5s; animation-delay: -2s; }
+        @keyframes slBob { 0%, 100% { transform: translate3d(0, 0, 0); } 50% { transform: translate3d(0, -10px, 0); } }
 
         /* ---------- پارالاکس موس (دسکتاپ) ---------- */
-        #{{ $uid }} .bk-hero-parallax { transform: translate3d(calc(var(--px, 0) * var(--depth, 10px)), calc(var(--py, 0) * var(--depth, 10px)), 0); transition: transform .4s ease-out; }
+        #{{ $uid }} .sl-hero-parallax { transform: translate3d(calc(var(--px, 0) * var(--depth, 10px)), calc(var(--py, 0) * var(--depth, 10px)), 0); transition: transform .4s ease-out; }
 
         /* ---------- دکمه اصلی: درخشش ---------- */
-        #{{ $uid }} .bk-hero-cta { position: relative; overflow: hidden; }
-        #{{ $uid }} .bk-hero-cta::after { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%); transform: translateX(-120%); animation: bkSweep 3.8s ease-in-out 1.6s infinite; }
-        @keyframes bkSweep { 0% { transform: translateX(-120%); } 35%, 100% { transform: translateX(120%); } }
+        #{{ $uid }} .sl-hero-cta { position: relative; overflow: hidden; }
+        #{{ $uid }} .sl-hero-cta::after { content: ''; position: absolute; inset: 0; background: linear-gradient(120deg, transparent 30%, rgba(255,255,255,.35) 50%, transparent 70%); transform: translateX(-120%); animation: slSweep 3.8s ease-in-out 1.6s infinite; }
+        @keyframes slSweep { 0% { transform: translateX(-120%); } 35%, 100% { transform: translateX(120%); } }
 
         /* ---------- نشانگر اسکرول ---------- */
-        #{{ $uid }} .bk-hero-scroll span { animation: bkScroll 1.8s ease-in-out infinite; }
-        @keyframes bkScroll { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(12px); opacity: 0; } 100% { opacity: 0; } }
+        #{{ $uid }} .sl-hero-scroll span { animation: slScroll 1.8s ease-in-out infinite; }
+        @keyframes slScroll { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(12px); opacity: 0; } 100% { opacity: 0; } }
 
-        #{{ $uid }}.bk-hero-overlay-h { min-height: var(--bk-hero-h); }
-        #{{ $uid }} .bk-hero-split-media { height: min(var(--bk-hero-h), 78vh); }
+        #{{ $uid }}.sl-hero-overlay-h { min-height: var(--sl-hero-h); }
+        #{{ $uid }} .sl-hero-split-media { height: min(var(--sl-hero-h), 78vh); }
 
         /* ---------- بدون انیمیشن (تنظیمات سکشن یا prefers-reduced-motion) ---------- */
-        #{{ $uid }}.no-anim [data-reveal], #{{ $uid }}.no-anim .bk-hero-frame, #{{ $uid }}.no-anim .bk-hero-media { opacity: 1; transform: none; filter: none; clip-path: inset(0 0 0 0 round 2.5rem); transition: none; animation: none; }
-        #{{ $uid }}.no-anim .bk-hero-blob, #{{ $uid }}.no-anim .bk-hero-bob, #{{ $uid }}.no-anim .bk-hero-gradient, #{{ $uid }}.no-anim .bk-hero-cta::after, #{{ $uid }}.no-anim .bk-hero-scroll span { animation: none; }
+        #{{ $uid }}.no-anim [data-reveal], #{{ $uid }}.no-anim .sl-hero-frame, #{{ $uid }}.no-anim .sl-hero-media { opacity: 1; transform: none; filter: none; clip-path: inset(0 0 0 0 round 2.5rem); transition: none; animation: none; }
+        #{{ $uid }}.no-anim .sl-hero-blob, #{{ $uid }}.no-anim .sl-hero-bob, #{{ $uid }}.no-anim .sl-hero-gradient, #{{ $uid }}.no-anim .sl-hero-cta::after, #{{ $uid }}.no-anim .sl-hero-scroll span { animation: none; }
         @media (prefers-reduced-motion: reduce) {
-            #{{ $uid }} [data-reveal], #{{ $uid }} .bk-hero-frame, #{{ $uid }} .bk-hero-media { opacity: 1 !important; transform: none !important; filter: none !important; clip-path: inset(0 0 0 0 round 2.5rem) !important; transition: none !important; animation: none !important; }
-            #{{ $uid }} .bk-hero-blob, #{{ $uid }} .bk-hero-bob, #{{ $uid }} .bk-hero-gradient, #{{ $uid }} .bk-hero-cta::after, #{{ $uid }} .bk-hero-scroll span, #{{ $uid }} .bk-hero-parallax { animation: none !important; transform: none !important; }
+            #{{ $uid }} [data-reveal], #{{ $uid }} .sl-hero-frame, #{{ $uid }} .sl-hero-media { opacity: 1 !important; transform: none !important; filter: none !important; clip-path: inset(0 0 0 0 round 2.5rem) !important; transition: none !important; animation: none !important; }
+            #{{ $uid }} .sl-hero-blob, #{{ $uid }} .sl-hero-bob, #{{ $uid }} .sl-hero-gradient, #{{ $uid }} .sl-hero-cta::after, #{{ $uid }} .sl-hero-scroll span, #{{ $uid }} .sl-hero-parallax { animation: none !important; transform: none !important; }
         }
-        @media (max-width: 1023px) { #{{ $uid }} .bk-hero-parallax { transform: none; } }
+        @media (max-width: 1023px) { #{{ $uid }} .sl-hero-parallax { transform: none; } }
     </style>
 
     {{-- ================= رسانه (مشترک دو حالت) ================= --}}
@@ -189,15 +189,15 @@ new class extends Component
             $alt = e($data['heading'] ?? 'hero');
 
             if (! $isVideo) {
-                return '<img src="' . e($mediaUrl) . '" alt="' . $alt . '" class="bk-hero-media ' . $classes . '" fetchpriority="high" decoding="async">';
+                return '<img src="' . e($mediaUrl) . '" alt="' . $alt . '" class="sl-hero-media ' . $classes . '" fetchpriority="high" decoding="async">';
             }
 
             $poster = $posterUrl ? ' poster="' . e($posterUrl) . '"' : '';
-            $video = '<video class="bk-hero-media bk-hero-video ' . $classes . ($mobilePosterOnly ? ' hidden lg:block' : '') . '" data-src="' . e($mediaUrl) . '"' . $poster
+            $video = '<video class="sl-hero-media sl-hero-video ' . $classes . ($mobilePosterOnly ? ' hidden lg:block' : '') . '" data-src="' . e($mediaUrl) . '"' . $poster
                 . ' muted loop playsinline preload="none" aria-hidden="true"></video>';
 
             if ($mobilePosterOnly) {
-                $video .= '<img src="' . e($posterUrl) . '" alt="' . $alt . '" class="bk-hero-media lg:hidden ' . $classes . '">';
+                $video .= '<img src="' . e($posterUrl) . '" alt="' . $alt . '" class="sl-hero-media lg:hidden ' . $classes . '">';
             }
 
             return $video;
@@ -208,10 +208,10 @@ new class extends Component
         {{-- ======================================================= --}}
         {{-- ================= حالت تمام‌صفحه (overlay) ============== --}}
         {{-- ======================================================= --}}
-        <section id="{{ $uid }}" dir="rtl" data-bk-hero data-animate="{{ $animate ? 1 : 0 }}"
-                 class="relative isolate overflow-hidden rounded-[1.75rem] md:rounded-[2.5rem] bk-hero-overlay-h flex items-end md:items-center bg-gray-900 {{ $animate ? '' : 'no-anim' }}">
+        <section id="{{ $uid }}" dir="rtl" data-sl-hero data-animate="{{ $animate ? 1 : 0 }}"
+                 class="relative isolate overflow-hidden rounded-[1.75rem] md:rounded-[2.5rem] sl-hero-overlay-h flex items-end md:items-center bg-gray-900 {{ $animate ? '' : 'no-anim' }}">
 
-            <div class="bk-hero-frame absolute inset-0 -z-10 overflow-hidden">
+            <div class="sl-hero-frame absolute inset-0 -z-10 overflow-hidden">
                 {!! $mediaMarkup('absolute inset-0 w-full h-full object-cover') !!}
                 @unless($mediaUrl)
                     <div class="absolute inset-0 bg-gradient-to-br from-brown-900 via-brown-700 to-gray-900"></div>
@@ -220,8 +220,8 @@ new class extends Component
 
             {{-- لایه تیره برای خوانایی متن --}}
             <div class="absolute inset-0 -z-10" style="background: linear-gradient(to top, rgba(0,0,0,{{ min(0.95, $overlay + 0.25) }}) 0%, rgba(0,0,0,{{ $overlay }}) 45%, rgba(0,0,0,{{ max(0, $overlay - 0.2) }}) 100%);"></div>
-            <div class="bk-hero-blob b1 -z-10 w-72 h-72 bg-brown-500 -top-16 -right-10"></div>
-            <div class="bk-hero-blob b2 -z-10 w-80 h-80 bg-amber-500 bottom-0 -left-20 opacity-30"></div>
+            <div class="sl-hero-blob b1 -z-10 w-72 h-72 bg-brown-500 -top-16 -right-10"></div>
+            <div class="sl-hero-blob b2 -z-10 w-80 h-80 bg-amber-500 bottom-0 -left-20 opacity-30"></div>
 
             <div class="relative w-full px-5 md:px-12 lg:px-20 py-12 md:py-20">
                 <div class="max-w-2xl text-white">
@@ -259,7 +259,7 @@ new class extends Component
                 @include('components.main.sections.partials.hero-video-toggle', ['position' => 'top-4 left-4 md:top-6 md:left-6'])
             @endif
 
-            <div class="bk-hero-scroll hidden md:flex absolute bottom-6 left-1/2 -translate-x-1/2 w-6 h-10 rounded-full border-2 border-white/40 justify-center pt-2" aria-hidden="true">
+            <div class="sl-hero-scroll hidden md:flex absolute bottom-6 left-1/2 -translate-x-1/2 w-6 h-10 rounded-full border-2 border-white/40 justify-center pt-2" aria-hidden="true">
                 <span class="block w-1 h-2 rounded-full bg-white/80"></span>
             </div>
         </section>
@@ -267,12 +267,12 @@ new class extends Component
         {{-- ======================================================= --}}
         {{-- ================= حالت دوستونه (split) ================== --}}
         {{-- ======================================================= --}}
-        <section id="{{ $uid }}" dir="rtl" data-bk-hero data-animate="{{ $animate ? 1 : 0 }}"
+        <section id="{{ $uid }}" dir="rtl" data-sl-hero data-animate="{{ $animate ? 1 : 0 }}"
                  class="relative isolate overflow-hidden rounded-[1.75rem] md:rounded-[2.5rem] bg-white/60 dark:bg-white/[0.03] border border-white/70 dark:border-white/10 backdrop-blur-md {{ $animate ? '' : 'no-anim' }}">
 
-            <div class="bk-hero-blob b1 -z-10 w-72 h-72 bg-brown-400/60 -top-24 -right-16"></div>
-            <div class="bk-hero-blob b2 -z-10 w-96 h-96 bg-amber-300/40 top-1/3 -left-32"></div>
-            <div class="bk-hero-blob b3 -z-10 w-64 h-64 bg-brown-300/40 -bottom-24 right-1/3"></div>
+            <div class="sl-hero-blob b1 -z-10 w-72 h-72 bg-brown-400/60 -top-24 -right-16"></div>
+            <div class="sl-hero-blob b2 -z-10 w-96 h-96 bg-amber-300/40 top-1/3 -left-32"></div>
+            <div class="sl-hero-blob b3 -z-10 w-64 h-64 bg-brown-300/40 -bottom-24 right-1/3"></div>
             {{-- بافت نقطه‌ای ظریف --}}
             <div class="absolute inset-0 -z-10 opacity-[0.07] dark:opacity-[0.12]" style="background-image: radial-gradient(currentColor 1px, transparent 1px); background-size: 22px 22px;"></div>
 
@@ -311,8 +311,8 @@ new class extends Component
 
                 {{-- رسانه --}}
                 <div class="relative order-1 {{ $mediaStart ? 'lg:order-1' : 'lg:order-2' }}">
-                    <div class="bk-hero-parallax relative" style="--depth: 14px">
-                        <div class="bk-hero-frame bk-hero-split-media relative overflow-hidden rounded-[2.5rem] shadow-2xl shadow-brown-900/20 bg-gradient-to-br from-brown-100 to-brown-200 dark:from-brown-900/40 dark:to-gray-900">
+                    <div class="sl-hero-parallax relative" style="--depth: 14px">
+                        <div class="sl-hero-frame sl-hero-split-media relative overflow-hidden rounded-[2.5rem] shadow-2xl shadow-brown-900/20 bg-gradient-to-br from-brown-100 to-brown-200 dark:from-brown-900/40 dark:to-gray-900">
                             {!! $mediaMarkup('absolute inset-0 w-full h-full object-cover') !!}
                             @unless($mediaUrl)
                                 <div class="absolute inset-0 flex items-center justify-center text-brown-400">
@@ -329,8 +329,8 @@ new class extends Component
 
                     {{-- کارت شناور: نشان --}}
                     @if(filled($data['badge_title'] ?? null))
-                        <div class="bk-hero-parallax absolute -bottom-5 right-4 md:right-8 lg:-right-6" style="--depth: -22px">
-                            <div data-reveal style="--d: 900ms"><div class="bk-hero-bob flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/85 dark:bg-gray-900/85 backdrop-blur-xl border border-white dark:border-white/10 shadow-xl">
+                        <div class="sl-hero-parallax absolute -bottom-5 right-4 md:right-8 lg:-right-6" style="--depth: -22px">
+                            <div data-reveal style="--d: 900ms"><div class="sl-hero-bob flex items-center gap-3 px-4 py-3 rounded-2xl bg-white/85 dark:bg-gray-900/85 backdrop-blur-xl border border-white dark:border-white/10 shadow-xl">
                                 <span class="w-10 h-10 rounded-xl bg-brown-600 text-white flex items-center justify-center shrink-0">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/></svg>
                                 </span>
@@ -346,8 +346,8 @@ new class extends Component
 
                     {{-- کارت شناور: اولین آمار --}}
                     @if(!empty($stats[0]))
-                        <div class="bk-hero-parallax absolute top-6 left-4 md:left-8 lg:-left-6 hidden sm:block" style="--depth: 18px">
-                            <div data-reveal style="--d: 1050ms"><div class="bk-hero-bob alt px-4 py-3 rounded-2xl bg-white/85 dark:bg-gray-900/85 backdrop-blur-xl border border-white dark:border-white/10 shadow-xl text-center">
+                        <div class="sl-hero-parallax absolute top-6 left-4 md:left-8 lg:-left-6 hidden sm:block" style="--depth: 18px">
+                            <div data-reveal style="--d: 1050ms"><div class="sl-hero-bob alt px-4 py-3 rounded-2xl bg-white/85 dark:bg-gray-900/85 backdrop-blur-xl border border-white dark:border-white/10 shadow-xl text-center">
                                 <div class="text-lg font-black text-brown-600 dark:text-brown-400 tabular-nums" data-count="{{ $stats[0]['value'] }}">{{ $stats[0]['value'] }}</div>
                                 @if($stats[0]['label'])<div class="text-[10px] font-bold text-gray-500 dark:text-gray-400">{{ $stats[0]['label'] }}</div>@endif
                             </div></div>
@@ -361,8 +361,8 @@ new class extends Component
     <script>
         (function () {
             const root = document.getElementById(@js($uid));
-            if (!root || root.dataset.bkInit) return;
-            root.dataset.bkInit = '1';
+            if (!root || root.dataset.slInit) return;
+            root.dataset.slInit = '1';
 
             const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
             const animate = root.dataset.animate === '1' && !reduce;
@@ -392,8 +392,8 @@ new class extends Component
             }
 
             // ویدیو: فقط وقتی در دید است بارگذاری و پخش می‌شود
-            const videos = [...root.querySelectorAll('video.bk-hero-video')];
-            const toggle = root.querySelector('[data-bk-video-toggle]');
+            const videos = [...root.querySelectorAll('video.sl-hero-video')];
+            const toggle = root.querySelector('[data-sl-video-toggle]');
             let userPaused = false;
             const visibleVideos = () => videos.filter((v) => v.offsetParent !== null);
             const playAll = () => visibleVideos().forEach((v) => {

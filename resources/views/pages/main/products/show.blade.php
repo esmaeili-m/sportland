@@ -554,7 +554,7 @@ new class extends Component
 
                             {{-- Icon box --}}
                             <div class="absolute top-6 left-1/2 -translate-x-1/2 z-[100] isolate">
-                                <div class="bk-gallery-tools flex items-center gap-1.5 p-1.5 bg-white/40 dark:bg-black/40 backdrop-blur-md rounded-2xl border border-white/60 dark:border-white/10 shadow-lg opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-all duration-500 transform translate-y-[-15px] group-hover:translate-y-0 [@media(hover:none)]:translate-y-0 flex-row-reverse">
+                                <div class="sl-gallery-tools flex items-center gap-1.5 p-1.5 bg-white/40 dark:bg-black/40 backdrop-blur-md rounded-2xl border border-white/60 dark:border-white/10 shadow-lg opacity-0 group-hover:opacity-100 [@media(hover:none)]:opacity-100 transition-all duration-500 transform translate-y-[-15px] group-hover:translate-y-0 [@media(hover:none)]:translate-y-0 flex-row-reverse">
 
                                     <div class="relative group/tooltip">
                                         <button type="button" wire:click="toggleWishlist" wire:loading.attr="disabled" wire:target="toggleWishlist" class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 {{ $isWishlisted ? 'bg-red-500 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-red-500 hover:text-white' }}">
@@ -571,7 +571,7 @@ new class extends Component
                                     <div class="relative group/tooltip">
                                         <button type="button" wire:click="toggleCompare" wire:loading.attr="disabled" wire:target="toggleCompare"
                                                 aria-pressed="{{ $isCompared ? 'true' : 'false' }}" aria-label="{{ $isCompared ? 'حذف از مقایسه' : 'مقایسه محصول' }}"
-                                                class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 {{ $isCompared ? 'bk-compare-active bg-teal-500 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-teal-500 hover:text-white' }}">
+                                                class="w-10 h-10 rounded-xl flex items-center justify-center transition-all duration-300 {{ $isCompared ? 'sl-compare-active bg-teal-500 text-white' : 'text-gray-700 dark:text-gray-200 hover:bg-teal-500 hover:text-white' }}">
                                             @if($isCompared)
                                                 <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M16 3h5v5"></path><path d="M8 21H3v-5"></path><path d="M21 3l-7 7"></path><path d="M3 21l7-7"></path><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"></circle></svg>
                                             @else
@@ -2329,9 +2329,9 @@ new class extends Component
          مستقل از build فایل CSS (در نسخه build قدیمی این قاعده وجود نداشت) --}}
     <style>
         @media (max-width: 1023px), (hover: none) {
-            .bk-gallery-tools { opacity: 1 !important; transform: none !important; translate: none !important; }
+            .sl-gallery-tools { opacity: 1 !important; transform: none !important; translate: none !important; }
         }
-        .bk-compare-active { background-color: #14b8a6; color: #fff; }
+        .sl-compare-active { background-color: #14b8a6; color: #fff; }
     </style>
 @endpush
 

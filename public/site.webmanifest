@@ -1,13 +1,13 @@
 {
-    "name": "برنج خطیر",
-    "short_name": "برنج خطیر",
-    "description": "برنج خطیر — KHATIR RICE",
+    "name": "اسپرت لند | Sport Land",
+    "short_name": "اسپرت لند",
+    "description": "فروشگاه اینترنتی کفش ورزشی، لباس ورزشی و تجهیزات تمرینی",
     "lang": "fa",
     "dir": "rtl",
     "start_url": "/",
     "display": "browser",
-    "background_color": "#f6f3ed",
-    "theme_color": "#2b633d",
+    "background_color": "#f0f4f6",
+    "theme_color": "#007375",
     "icons": [
         { "src": "/main/images/favicon_io/icon-192.png", "sizes": "192x192", "type": "image/png" },
         { "src": "/main/images/favicon_io/icon-512.png", "sizes": "512x512", "type": "image/png" },

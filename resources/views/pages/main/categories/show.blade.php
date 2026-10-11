@@ -890,7 +890,7 @@ new class extends Component
 
                                                     <a
                                                         href="{{ route('products.show', $product->slug) }}"
-                                                        x-data x-on:click.prevent="$dispatch('bk-quick-view', { id: {{ $product->id }} })"
+                                                        x-data x-on:click.prevent="$dispatch('sl-quick-view', { id: {{ $product->id }} })"
                                                         class="w-10 h-10
                                            bg-white/90 dark:bg-zinc-900/90
                                            backdrop-blur-md
@@ -1141,7 +1141,7 @@ new class extends Component
                                                 <div class="relative flex items-center group/tooltip">
                                                     <a
                                                         href="{{ route('products.show', $product->slug) }}"
-                                                        x-data x-on:click.prevent="$dispatch('bk-quick-view', { id: {{ $product->id }} })"
+                                                        x-data x-on:click.prevent="$dispatch('sl-quick-view', { id: {{ $product->id }} })"
                                                         class="w-9 h-9 bg-white/90 dark:bg-zinc-900/90 backdrop-blur-md text-gray-900 dark:text-white rounded-xl flex items-center justify-center shadow-sm hover:bg-secondary-500 hover:text-white transition-all"
                                                     >
                                                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">

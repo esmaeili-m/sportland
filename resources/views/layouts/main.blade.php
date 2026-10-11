@@ -6,13 +6,24 @@
 
         $settings = \App\Models\Setting::cachedAll();
 
-        // لوگو/فاوآیکون آپلودی فقط وقتی config/brand.php اجازه دهد (دیتابیس فعلاً با zaracharm مشترک است)
+        // لوگو/فاوآیکون آپلودی فقط وقتی config/brand.php اجازه دهد (دیتابیس فعلاً با پروژه‌های دیگر مشترک است)
         $favicon = config('brand.use_uploaded_favicon') ? ($settings['favicon'] ?? null) : null;
         $logo = config('brand.use_uploaded_logo') ? ($settings['logo'] ?? null) : null;
         // نام برند: config/brand.php
         $siteName = config('brand.name');
         $siteNameEn = config('brand.name_en');
+        $siteTitle = config('brand.title');
         $siteAbout = config('brand.about');
+
+        // سئوی صفحه: کامپوننت صفحه در mount با view()->share('seo', $model->getSeoPayload()) می‌فرستد
+        $seo = $seo ?? [];
+        $pageTitle = filled($seo['title'] ?? null) && ! request()->routeIs('home')
+            ? $seo['title'] . ' | ' . $siteTitle
+            : $siteTitle;
+        $pageDescription = ($seo['description'] ?? null) ?: ($settings['meta_description'] ?? config('brand.description'));
+        $pageImage = ($seo['og_image'] ?? null) ?: ($logo ? asset('storage/' . $logo) : asset('main/images/brand/og-default.png'));
+        $pageCanonical = ($seo['canonical'] ?? null) ?: url()->current();
+        $robots = (! empty($seo['no_index']) ? 'noindex' : 'index') . ', ' . (! empty($seo['no_follow']) ? 'nofollow' : 'follow');
     @endphp
 
     <meta charset="UTF-8">
@@ -22,15 +33,15 @@
 
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
-    <title>{{ $siteName }} | {{ $siteNameEn }}</title>
+    <title>{{ $pageTitle }}</title>
 
     <meta name="description"
-          content="{{ $settings['meta_description'] ?? 'فروشگاه اینترنتی ' . $siteName }}">
+          content="{{ $pageDescription }}">
 
     <meta name="keywords"
-          content="{{ $settings['meta_keywords'] ?? $siteName . ', فروشگاه اینترنتی' }}">
+          content="{{ ($seo['keywords'] ?? null) ?: ($settings['meta_keywords'] ?? $siteName . ', کفش ورزشی, لباس ورزشی, تجهیزات ورزشی') }}">
 
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="{{ $robots }}">
 
     <meta name="author"
           content="{{ $siteName }}">
@@ -43,35 +54,58 @@
         <link rel="icon" href="{{ asset('storage/' . $favicon) }}">
         <link rel="apple-touch-icon" href="{{ asset('storage/' . $favicon) }}">
     @else
-        {{-- نشان موقت «برنج خطیر» (public/main/images/brand) — TODO(OWNER): جایگزینی با لوگوی رسمی --}}
+        {{-- نشان «اسپرت لند» (public/main/images/brand) --}}
         <link rel="icon" type="image/svg+xml" href="{{ asset('favicon.svg') }}">
         <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('main/images/favicon_io/favicon-32x32.png') }}">
         <link rel="icon" type="image/png" sizes="16x16" href="{{ asset('main/images/favicon_io/favicon-16x16.png') }}">
         <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('main/images/favicon_io/apple-touch-icon.png') }}">
     @endif
     <link rel="manifest" href="{{ asset('site.webmanifest') }}">
-    <meta name="theme-color" content="#2b633d">
+    <meta name="theme-color" content="#007375" media="(prefers-color-scheme: light)">
+    <meta name="theme-color" content="#060b0d" media="(prefers-color-scheme: dark)">
 
-    {{-- Open Graph / Twitter پیش‌فرض --}}
-    <meta property="og:type" content="website">
+    {{-- Open Graph / Twitter --}}
+    <meta property="og:type" content="{{ $seo['og_type'] ?? 'website' }}">
     <meta property="og:locale" content="fa_IR">
-    <meta property="og:site_name" content="{{ $siteName }}">
-    <meta property="og:title" content="{{ $siteName }}">
-    <meta property="og:description" content="{{ $settings['meta_description'] ?? 'فروشگاه اینترنتی ' . $siteName }}">
-    <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:image" content="{{ $logo ? asset('storage/' . $logo) : asset('main/images/brand/og-default.png') }}">
-    <meta name="twitter:card" content="summary_large_image">
-    <link rel="canonical" href="{{ url()->current() }}">
+    <meta property="og:site_name" content="{{ $siteTitle }}">
+    <meta property="og:title" content="{{ ($seo['og_title'] ?? null) ?: $pageTitle }}">
+    <meta property="og:description" content="{{ ($seo['og_description'] ?? null) ?: $pageDescription }}">
+    <meta property="og:url" content="{{ $pageCanonical }}">
+    <meta property="og:image" content="{{ $pageImage }}">
+    <meta name="twitter:card" content="{{ $seo['twitter_card'] ?? 'summary_large_image' }}">
+    <meta name="twitter:title" content="{{ ($seo['twitter_title'] ?? null) ?: $pageTitle }}">
+    <meta name="twitter:description" content="{{ ($seo['twitter_description'] ?? null) ?: $pageDescription }}">
+    <meta name="twitter:image" content="{{ ($seo['twitter_image'] ?? null) ?: $pageImage }}">
+    <link rel="canonical" href="{{ $pageCanonical }}">
 
-    {{-- داده ساختاریافته سازمان: فقط فیلدهای واقعی. تلفن و نشانی تا تکمیل اطلاعات مالک اضافه نمی‌شوند — TODO(OWNER) --}}
+    {{-- داده ساختاریافته سازمان و وب‌سایت: فقط فیلدهای واقعی. تلفن، نشانی و شبکه‌های اجتماعی تا تکمیل اطلاعات مالک اضافه نمی‌شوند — TODO(OWNER) --}}
     <script type="application/ld+json">{!! json_encode([
         '@context' => 'https://schema.org',
-        '@type' => 'Organization',
-        'name' => $siteName,
-        'alternateName' => $siteNameEn,
-        'url' => url('/'),
-        'logo' => $logo ? asset('storage/' . $logo) : asset('main/images/favicon_io/icon-512.png'),
+        '@graph' => [
+            [
+                '@type' => 'Organization',
+                '@id' => url('/') . '#organization',
+                'name' => $siteName,
+                'alternateName' => 'Sport Land',
+                'url' => url('/'),
+                'logo' => $logo ? asset('storage/' . $logo) : asset('main/images/favicon_io/icon-512.png'),
+            ],
+            [
+                '@type' => 'WebSite',
+                '@id' => url('/') . '#website',
+                'name' => $siteTitle,
+                'url' => url('/'),
+                'inLanguage' => 'fa-IR',
+                'publisher' => ['@id' => url('/') . '#organization'],
+                'potentialAction' => [
+                    '@type' => 'SearchAction',
+                    'target' => route('search') . '?q={search_term_string}',
+                    'query-input' => 'required name=search_term_string',
+                ],
+            ],
+        ],
     ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+    @stack('structured-data')
     <link rel="stylesheet" href="{{asset('main/js/plugin/story-player/styles.css')}}?v=4.0.0">
     <link rel="stylesheet" href="{{asset('main/js/plugin/swiper/swiper-bundle.min.css')}}">
     <link rel="stylesheet" href="{{asset('main/css/app.css')}}">
@@ -175,16 +209,16 @@
             <div class="md:col-span-2 lg:col-span-2 space-y-8">
                 <div class="flex items-center gap-4">
                     <div class="w-14 h-14 bg-primary-600 rounded-2xl flex items-center justify-center">
-                        <x-brand.mark class="w-9 h-9 text-white"/>
+                        <x-brand.mark class="w-10 h-10 text-white [--mark-accent:var(--color-secondary-200)]"/>
                     </div>
                     <span class="flex flex-col leading-none">
-                        <span class="text-2xl font-black text-gray-900 dark:text-white">{{ $siteName }}</span>
+                        <span class="text-2xl font-black text-gray-900 dark:text-white [word-spacing:0.12em]">{{ $siteName }}</span>
                         <span class="mt-1.5 text-xs font-bold tracking-[0.28em] text-primary-700 dark:text-primary-300" dir="ltr" lang="en">{{ $siteNameEn }}</span>
                     </span>
                 </div>
                 {{-- متن پیش‌فرض بدون ادعای کیفیت/منشأ؛ متن واقعی «درباره» از پنل > تنظیمات --}}
                 <p class="text-sm text-gray-600 dark:text-gray-400 leading-8 font-medium max-w-md">
-                    {{ $siteAbout ?? ('فروشگاه اینترنتی ' . $siteName . '؛ سفارش آنلاین برنج و پیگیری سفارش از حساب کاربری.') }}
+                    {{ $siteAbout ?? ('فروشگاه اینترنتی ' . $siteName . '؛ کفش ورزشی، لباس ورزشی و تجهیزات تمرینی، با انتخاب سایز و رنگ و پیگیری سفارش از حساب کاربری.') }}
                 </p>
                 {{-- شبکه‌های اجتماعی از دیتابیس (پنل > شبکه‌های اجتماعی) --}}
                 <x-main.site-socials />
@@ -217,14 +251,14 @@
 
         <div class="pt-10 border-t border-black/5 dark:border-white/5 flex flex-col md:flex-row justify-between items-center gap-8">
             <div class="flex items-center gap-4">
-                <p class="text-[11px] text-gray-500 font-bold">© ۲۰۲6 طراحی و توسعه توسط <span class="text-gray-900 dark:text-white font-black underline decoration-brown-500/30 decoration-4">STARTWEBONE</span>.</p>
+                <p class="text-[11px] text-gray-500 font-bold">© {{ $siteTitle }} · طراحی و توسعه توسط <span class="text-gray-900 dark:text-white font-black underline decoration-primary-500/40 decoration-4">STARTWEBONE</span>.</p>
             </div>
-            <div class="flex flex-wrap justify-center gap-8">
-                <a href="#" class="legal-link">شرایط خدمات</a>
-                <a href="#" class="legal-link">سیاست حفظ حریم خصوصی</a>
-                <a href="#" class="legal-link">کوکی‌ها</a>
-                <a href="#" class="legal-link">امنیت</a>
-            </div>
+            {{-- فقط صفحه‌هایی که وجود دارند؛ قوانین و حریم خصوصی پس از نوشته‌شدن متن واقعی اضافه شوند — TODO(OWNER) --}}
+            <nav aria-label="پیوندهای فروشگاه" class="flex flex-wrap justify-center gap-x-8 gap-y-3">
+                <a href="{{ route('page.show', 'about-us') }}" class="legal-link">درباره ما</a>
+                <a href="{{ route('page.show', 'contact-us') }}" class="legal-link">تماس با ما</a>
+                <a href="{{ route('brands.list') }}" class="legal-link">برندها</a>
+            </nav>
         </div>
     </div>
 </footer>
@@ -239,12 +273,12 @@
 
             <!-- Home -->
             <li>
-                <a href="/" class="flex flex-col items-center gap-1 px-4 py-1 text-brown-600 dark:text-brown-400">
+                <a href="/" @if(request()->routeIs('home')) aria-current="page" @endif class="flex flex-col items-center gap-1 px-3 py-1 min-w-11 {{ request()->routeIs('home') ? 'text-primary-600 dark:text-primary-400' : 'text-gray-500 dark:text-gray-400' }}">
                     <svg class="w-6 h-6" fill="currentColor" viewBox="0 0 24 24">
                         <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
                     </svg>
 
-                    <span class="text-[10px] font-bold">
+                    <span class="text-[11px] font-bold">
                         خانه
                     </span>
                 </a>
@@ -252,12 +286,12 @@
 
             <!-- Categories -->
             <li>
-                <a href="/categories" class="flex flex-col items-center gap-1 px-4 py-1 text-gray-500 dark:text-gray-400">
+                <a href="{{ route('page.show', 'categories') }}" class="flex flex-col items-center gap-1 px-3 py-1 min-w-11 text-gray-500 dark:text-gray-400">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16m-7 6h7"/>
                     </svg>
 
-                    <span class="text-[10px] font-bold">
+                    <span class="text-[11px] font-bold">
                         دسته‌ها
                     </span>
                 </a>
@@ -270,6 +304,7 @@
                     type="button"
                     x-data
                     @click="$dispatch('open-cart')"
+                    aria-label="سبد خرید"
                     class="relative flex items-center justify-center w-14 h-14 bg-brown-600 rounded-2xl text-white"
                 >
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
@@ -287,12 +322,12 @@
 
             <!-- Wishlist -->
             <li>
-                <a href="{{ route('user.dashboard', ['tab' => 'wishlist']) }}" class="flex flex-col items-center gap-1 px-4 py-1 text-gray-500 dark:text-gray-400">
+                <a href="{{ route('user.dashboard', ['tab' => 'wishlist']) }}" class="flex flex-col items-center gap-1 px-3 py-1 min-w-11 text-gray-500 dark:text-gray-400">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M4.318 6.318a4.5 4.5 0 000 6.364L12 20.364l7.682-7.682a4.5 4.5 0 00-6.364-6.364L12 7.636l-1.318-1.318a4.5 4.5 0 00-6.364 0z"/>
                     </svg>
 
-                    <span class="text-[10px] font-bold">
+                    <span class="text-[11px] font-bold">
                         علاقه‌مندی
                     </span>
                 </a>
@@ -300,12 +335,12 @@
 
             <!-- Profile -->
             <li>
-                <a href="{{ auth()->check() ? route('user.dashboard') : route('login')}}" class="flex flex-col items-center gap-1 px-4 py-1 text-gray-500 dark:text-gray-400">
+                <a href="{{ auth()->check() ? route('user.dashboard') : route('login')}}" class="flex flex-col items-center gap-1 px-3 py-1 min-w-11 text-gray-500 dark:text-gray-400">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/>
                     </svg>
 
-                    <span class="text-[10px] font-bold">
+                    <span class="text-[11px] font-bold">
                         پروفایل
                     </span>
                 </a>
@@ -325,7 +360,7 @@
 
         <div class="flex items-center justify-between p-5 border-b border-white/10">
             <span class="text-xl font-black text-gray-800 dark:text-white">جستجو در <span class="text-primary-500">{{ $siteName }}</span></span>
-            <button id="close-search-modal" class="p-2 bg-white/10 rounded-full text-gray-500 dark:text-gray-400">
+            <button id="close-search-modal" type="button" aria-label="بستن جستجو" class="p-2 bg-white/10 rounded-full text-gray-500 dark:text-gray-400">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/></svg>
             </button>
         </div>
@@ -361,7 +396,7 @@
                 </div>
                 <span class="font-black text-xl dark:text-white">منوی اصلی</span>
             </div>
-            <button class="close-menu p-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 rounded-xl transition-all border border-transparent hover:border-red-100">
+            <button type="button" aria-label="بستن منو" class="close-menu p-2 hover:bg-red-50 dark:hover:bg-red-900/20 text-gray-400 hover:text-red-500 rounded-xl transition-all border border-transparent hover:border-red-100">
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path d="M6 18L18 6M6 6l12 12" stroke-width="2.5" stroke-linecap="round"/>
                 </svg>
@@ -381,10 +416,10 @@
                         <div>
                             @auth
                                 <span class="block font-black text-sm">{{ trim(auth()->user()->full_name) ?: auth()->user()->mobile }}</span>
-                                <span class="block text-[10px] opacity-70 mt-0.5">مشاهده پنل کاربری</span>
+                                <span class="block text-[11px] opacity-80 mt-0.5">مشاهده پنل کاربری</span>
                             @else
                                 <span class="block font-black text-sm">ورود یا ثبت‌نام</span>
-                                <span class="block text-[10px] opacity-70 mt-0.5">با شماره موبایل وارد شوید</span>
+                                <span class="block text-[11px] opacity-80 mt-0.5">با شماره موبایل وارد شوید</span>
                             @endauth
                         </div>
                     </div>

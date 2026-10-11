@@ -32,70 +32,86 @@
     --breakpoint-laptop: 75rem;
     --breakpoint-desktop: 90rem;
 
-    /* ===== هویت بصری «برنج خطیر» — مرجع: DESIGN.md =====
-       primary = سبز شالیزار (رنگ برند؛ دکمه‌ها، لینک‌ها، حالت فعال)
-       brown   = نام فنی قدیمی که صدها کلاس به آن ارجاع می‌دهند؛ عمداً هم‌مقدار primary نگه داشته شده
-       secondary = زعفرانی (تأکید ثانویه: تخفیف، برچسب ویژه)
-       gray    = خنثی گرم «دانه برنج» (جایگزین خاکستری سرد پیش‌فرض Tailwind) */
+    /* ===== هویت بصری «اسپرت لند | Sport Land» — مرجع: DESIGN.md =====
+       primary   = فیروزه‌ای (رنگ برند و عمل اصلی: دکمه، لینک، حالت فعال). 300–400 فیروزه‌ای روشن، 700–950 فیروزه‌ای تیره
+       brown     = نام فنی قدیمی که صدها کلاس به آن ارجاع می‌دهند؛ عمداً هم‌مقدار primary نگه داشته شده
+       secondary = نارنجی مرجانی (فقط تأکید: تخفیف، حراج، فوریت) — هرگز رنگ عمل اصلی نیست
+       gray      = خنثی سرد با ته‌رنگ فیروزه‌ای خیلی کم
+       کنتراست با متن سفید: primary-500 ≈ 4.8، primary-600 ≈ 5.7، primary-700 ≈ 7.8، secondary-500 ≈ 4.9، secondary-600 ≈ 5.5 */
 
-    /* primary — سبز شالیزار */
-    --color-primary: oklch(51% 0.095 152);
-    --color-primary-50: oklch(97.5% 0.014 152);
-    --color-primary-100: oklch(94.5% 0.028 152);
-    --color-primary-200: oklch(89% 0.05 152);
-    --color-primary-300: oklch(81% 0.075 152);
-    --color-primary-400: oklch(70% 0.1 152);
-    --color-primary-500: oklch(51% 0.095 152);
-    --color-primary-600: oklch(45% 0.085 152);
-    --color-primary-700: oklch(38% 0.072 152);
-    --color-primary-800: oklch(31% 0.058 152);
-    --color-primary-900: oklch(24% 0.044 152);
-    --color-primary-950: oklch(17% 0.03 152);
+    /* primary — فیروزه‌ای */
+    --color-primary: oklch(54% 0.1 196);
+    --color-primary-50: oklch(97.5% 0.02 195);
+    --color-primary-100: oklch(94% 0.04 195);
+    --color-primary-200: oklch(89% 0.07 195);
+    --color-primary-300: oklch(82% 0.1 193);
+    --color-primary-400: oklch(74% 0.12 192);
+    --color-primary-500: oklch(54% 0.1 196);
+    --color-primary-600: oklch(50% 0.09 197);
+    --color-primary-700: oklch(43% 0.078 200);
+    --color-primary-800: oklch(36% 0.064 203);
+    --color-primary-900: oklch(29% 0.05 206);
+    --color-primary-950: oklch(21% 0.036 210);
 
     /* brown (نام فنی قدیمی) — هم‌مقدار primary */
-    --color-brown: oklch(51% 0.095 152);
-    --color-brown-50: oklch(97.5% 0.014 152);
-    --color-brown-100: oklch(94.5% 0.028 152);
-    --color-brown-200: oklch(89% 0.05 152);
-    --color-brown-300: oklch(81% 0.075 152);
-    --color-brown-400: oklch(70% 0.1 152);
-    --color-brown-500: oklch(51% 0.095 152);
-    --color-brown-600: oklch(45% 0.085 152);
-    --color-brown-700: oklch(38% 0.072 152);
-    --color-brown-800: oklch(31% 0.058 152);
-    --color-brown-900: oklch(24% 0.044 152);
-    --color-brown-950: oklch(17% 0.03 152);
+    --color-brown: oklch(54% 0.1 196);
+    --color-brown-50: oklch(97.5% 0.02 195);
+    --color-brown-100: oklch(94% 0.04 195);
+    --color-brown-200: oklch(89% 0.07 195);
+    --color-brown-300: oklch(82% 0.1 193);
+    --color-brown-400: oklch(74% 0.12 192);
+    --color-brown-500: oklch(54% 0.1 196);
+    --color-brown-600: oklch(50% 0.09 197);
+    --color-brown-700: oklch(43% 0.078 200);
+    --color-brown-800: oklch(36% 0.064 203);
+    --color-brown-900: oklch(29% 0.05 206);
+    --color-brown-950: oklch(21% 0.036 210);
 
-    /* secondary — زعفرانی */
-    --color-secondary: oklch(55% 0.15 52);
-    --color-secondary-50: oklch(97% 0.018 52);
-    --color-secondary-100: oklch(93.5% 0.04 52);
-    --color-secondary-200: oklch(87.5% 0.075 52);
-    --color-secondary-300: oklch(80% 0.11 52);
-    --color-secondary-400: oklch(72% 0.14 52);
-    --color-secondary-500: oklch(55% 0.15 52);
-    --color-secondary-600: oklch(49% 0.135 52);
-    --color-secondary-700: oklch(42% 0.115 52);
-    --color-secondary-800: oklch(35% 0.095 52);
-    --color-secondary-900: oklch(27% 0.07 52);
-    --color-secondary-950: oklch(20% 0.05 52);
+    /* secondary — نارنجی مرجانی (تأکید) */
+    --color-secondary: oklch(57% 0.19 38);
+    --color-secondary-50: oklch(97% 0.02 45);
+    --color-secondary-100: oklch(93.5% 0.045 45);
+    --color-secondary-200: oklch(87.5% 0.085 45);
+    --color-secondary-300: oklch(80% 0.12 45);
+    --color-secondary-400: oklch(74% 0.15 45);
+    --color-secondary-500: oklch(57% 0.19 38);
+    --color-secondary-600: oklch(54% 0.18 36);
+    --color-secondary-700: oklch(46% 0.155 35);
+    --color-secondary-800: oklch(38% 0.125 35);
+    --color-secondary-900: oklch(30% 0.095 35);
+    --color-secondary-950: oklch(22% 0.065 35);
 
-    /* gray — خنثی گرم دانه برنج */
-    --color-gray-50: oklch(98.6% 0.006 85);
-    --color-gray-100: oklch(96.4% 0.008 85);
-    --color-gray-200: oklch(92.2% 0.01 85);
-    --color-gray-300: oklch(86.5% 0.012 85);
-    --color-gray-400: oklch(64% 0.012 85);
-    --color-gray-500: oklch(52% 0.012 85);
-    --color-gray-600: oklch(45% 0.011 85);
-    --color-gray-700: oklch(37.5% 0.01 85);
-    --color-gray-800: oklch(27.5% 0.008 85);
-    --color-gray-900: oklch(21% 0.007 85);
-    --color-gray-950: oklch(14.5% 0.005 85);
+    /* gray — خنثی سرد (gray-400 ≈ 4.35 روی سفید: فقط آیکون، placeholder و متن کمکی) */
+    --color-gray-50: oklch(98.5% 0.003 220);
+    --color-gray-100: oklch(96.5% 0.005 220);
+    --color-gray-200: oklch(92.5% 0.007 220);
+    --color-gray-300: oklch(87% 0.009 220);
+    --color-gray-400: oklch(57.5% 0.013 220);
+    --color-gray-500: oklch(53% 0.014 220);
+    --color-gray-600: oklch(45% 0.014 220);
+    --color-gray-700: oklch(37% 0.013 220);
+    --color-gray-800: oklch(27.5% 0.012 220);
+    --color-gray-900: oklch(20.5% 0.011 220);
+    --color-gray-950: oklch(14.5% 0.01 220);
+
+    /* رنگ‌های معنایی (نام‌های وضعیت؛ کامپوننت‌های قدیمی هنوز emerald/amber/red مستقیم دارند) */
+    --color-success: oklch(52% 0.13 155);
+    --color-warning: oklch(62% 0.15 70);
+    --color-danger: oklch(55% 0.2 25);
+    --color-info: var(--color-primary-600);
+    --color-sale: var(--color-secondary-600);
+    --color-sold-out: var(--color-gray-500);
+
+    /* شکل، سایه و حرکت */
+    --radius-card: 1.25rem;
+    --radius-control: 0.75rem;
+    --shadow-card: 0 1px 2px 0 oklch(20% 0.02 220 / 0.06), 0 1px 3px 0 oklch(20% 0.02 220 / 0.05);
+    --shadow-lift: 0 10px 24px -12px oklch(20% 0.03 220 / 0.28);
+    --ease-snap: cubic-bezier(0.2, 0.8, 0.2, 1);
 
     /* custom color */
-    --color-custom-light: oklch(98.6% 0.006 85);
-    --color-custom-dark: oklch(14.5% 0.005 85);
+    --color-custom-light: oklch(98.5% 0.003 220);
+    --color-custom-dark: oklch(14.5% 0.01 220);
 }
 [x-cloak] {
     display: none !important;
@@ -389,7 +405,7 @@
 
     /* Product tooltip */
     .product-tooltip {
-        @apply absolute right-full mr-3 whitespace-nowrap bg-gray-900 dark:bg-amber-500 text-white text-[10px] py-1.5 px-3 rounded-lg opacity-0 pointer-events-none translate-x-2 transition-all duration-300;
+        @apply absolute right-full mr-3 whitespace-nowrap bg-gray-900 dark:bg-primary-700 text-white text-[10px] py-1.5 px-3 rounded-lg opacity-0 pointer-events-none translate-x-2 transition-all duration-300;
     }
 
     .group\/tooltip:hover .product-tooltip {
@@ -398,7 +414,7 @@
 
     .product-tooltip::after {
         content: '';
-        @apply absolute top-1/2 -translate-y-1/2 -right-1 border-4 border-transparent border-l-gray-900 dark:border-l-amber-500;
+        @apply absolute top-1/2 -translate-y-1/2 -right-1 border-4 border-transparent border-l-gray-900 dark:border-l-primary-700;
     }
 
     /* Quick view modal scrollbar */
@@ -710,210 +726,85 @@
     }
 }
 
+
 /* =====================================================================
-   سیستم شیشه‌ای «برنج خطیر» (کارت‌ها و دکمه‌ها) — مرجع: DESIGN.md
-   عمداً خارج از @layer: قوانین بدون لایه بر utilityهای Tailwind غلبه می‌کنند،
-   بنابراین کلاس‌های رنگ موجود در کامپوننت‌ها بدون ویرایش تک‌تک فایل‌ها شیشه‌ای می‌شوند.
-   برای خاموش کردن: این بخش را حذف کنید.
+   سطوح و دکمه‌های «اسپرت لند» — مرجع: DESIGN.md
+   سطوح تخت و مات: کارت سفید (حالت تیره: خاکستری تیره) با border نازک و سایه خیلی کم؛
+   سایه فقط پاسخ به تعامل است. عمداً خارج از @layer تا بر کلاس‌های نیمه‌شفاف/blur قدیمی
+   کامپوننت‌ها غلبه کند، بدون ویرایش تک‌تک فایل‌ها. استثنا: کلاس .no-flat
    ===================================================================== */
 :root {
-    --glass-bg: rgb(255 255 255 / 0.5);
-    --glass-bg-nested: rgb(255 255 255 / 0.38);
-    --glass-border: rgb(255 255 255 / 0.7);
-    --glass-highlight: rgb(255 255 255 / 0.85);
-    --glass-shadow: 0 10px 30px -14px rgb(22 57 33 / 0.28);
-    --glass-shadow-hover: 0 18px 40px -16px rgb(22 57 33 / 0.36);
-    --glass-blur: blur(18px) saturate(160%);
+    --surface: var(--color-white, #fff);
+    --surface-nested: var(--color-gray-50);
+    --surface-border: var(--color-gray-200);
 }
 
 .dark {
-    --glass-bg: rgb(30 32 27 / 0.45);
-    --glass-bg-nested: rgb(255 255 255 / 0.05);
-    --glass-border: rgb(255 255 255 / 0.1);
-    --glass-highlight: rgb(255 255 255 / 0.07);
-    --glass-shadow: 0 14px 34px -14px rgb(0 0 0 / 0.65);
-    --glass-shadow-hover: 0 20px 44px -16px rgb(0 0 0 / 0.75);
+    --surface: var(--color-gray-900);
+    --surface-nested: oklch(24% 0.012 220);
+    --surface-border: oklch(100% 0 0 / 0.08);
 }
 
-/* بستر رنگی پشت صفحه: بدون آن شیشه دیده نمی‌شود (گرادیان ثابت، بدون filter برای کارایی) */
-body::before {
-    content: "";
-    position: fixed;
-    inset: 0;
-    z-index: -1;
-    pointer-events: none;
-    background:
-        radial-gradient(42rem 34rem at 100% 0%, color-mix(in oklab, var(--color-primary-300) 55%, transparent), transparent 70%),
-        radial-gradient(38rem 30rem at 0% 48%, color-mix(in oklab, var(--color-primary-200) 65%, transparent), transparent 70%),
-        radial-gradient(36rem 28rem at 72% 100%, color-mix(in oklab, var(--color-secondary-200) 60%, transparent), transparent 70%);
-}
-
-.dark body::before {
-    background:
-        radial-gradient(42rem 34rem at 100% 0%, color-mix(in oklab, var(--color-primary-700) 45%, transparent), transparent 70%),
-        radial-gradient(38rem 30rem at 0% 48%, color-mix(in oklab, var(--color-primary-800) 50%, transparent), transparent 70%),
-        radial-gradient(36rem 28rem at 72% 100%, color-mix(in oklab, var(--color-secondary-900) 45%, transparent), transparent 70%);
-}
-
-/* ---------- کارت‌ها ----------
-   کلاس صریح .glass-card + کارت‌های موجود فروشگاه (سطح روشن با گوشه گرد بزرگ) به‌صورت خودکار */
-.glass-card,
-main :is([class*="rounded-2xl"], [class*="rounded-3xl"], [class*="rounded-[1.5rem]"], [class*="rounded-[1.8rem]"], [class*="rounded-[2"], [class*="rounded-[3"], [class*="rounded-[4"]):is(.bg-white, [class*="bg-white/"], .bg-gray-50, [class*="bg-gray-50/"]):not(input, textarea, select, button, img, .absolute, .fixed, .no-glass) {
-    background-color: var(--glass-bg);
-    -webkit-backdrop-filter: var(--glass-blur);
-    backdrop-filter: var(--glass-blur);
-    border-color: var(--glass-border);
-    box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow);
-}
-
-/* کارت داخل کارت: بدون blur دوم (کارایی) و کم‌رنگ‌تر */
-:is(.glass-card, main [class*="rounded-"]) :is(.glass-card, [class*="rounded-2xl"], [class*="rounded-3xl"], [class*="rounded-[1.5rem]"], [class*="rounded-[1.8rem]"], [class*="rounded-[2"], [class*="rounded-[3"]):is(.glass-card, .bg-white, [class*="bg-white/"], .bg-gray-50, [class*="bg-gray-50/"]):not(input, textarea, select, button, img, .absolute, .fixed, .no-glass) {
-    background-color: var(--glass-bg-nested);
+/* ---------- کارت‌ها ---------- */
+.surface-card,
+main :is([class*="rounded-2xl"], [class*="rounded-3xl"], [class*="rounded-[1.5rem]"], [class*="rounded-[1.8rem]"], [class*="rounded-[2"], [class*="rounded-[3"], [class*="rounded-[4"]):is(.bg-white, [class*="bg-white/"], .bg-gray-50, [class*="bg-gray-50/"]):not(input, textarea, select, button, img, .absolute, .fixed, .no-flat) {
+    background-color: var(--surface);
     -webkit-backdrop-filter: none;
     backdrop-filter: none;
-    box-shadow: inset 0 1px 0 var(--glass-highlight);
+    border-color: var(--surface-border);
+    box-shadow: var(--shadow-card);
+}
+
+/* کارت داخل کارت: یک پله تیره‌تر، بدون سایه */
+:is(.surface-card, main [class*="rounded-"]) :is(.surface-card, [class*="rounded-2xl"], [class*="rounded-3xl"], [class*="rounded-[1.5rem]"], [class*="rounded-[1.8rem]"], [class*="rounded-[2"], [class*="rounded-[3"]):is(.surface-card, .bg-white, [class*="bg-white/"], .bg-gray-50, [class*="bg-gray-50/"]):not(input, textarea, select, button, img, .absolute, .fixed, .no-flat) {
+    background-color: var(--surface-nested);
+    box-shadow: none;
 }
 
 /* نوار ناوبری پایین موبایل */
 .fixed.bottom-4 > .bg-white.rounded-3xl {
-    background-color: var(--glass-bg);
-    -webkit-backdrop-filter: var(--glass-blur);
-    backdrop-filter: var(--glass-blur);
-    border-color: var(--glass-border);
-    box-shadow: inset 0 1px 0 var(--glass-highlight), var(--glass-shadow);
+    background-color: var(--surface);
+    border-color: var(--surface-border);
+    box-shadow: var(--shadow-lift);
 }
 
 /* ---------- دکمه‌ها ----------
-   «نرم + سایه» (تأیید مالک): لبه نئونی نرم + سایه دولایه + هاور لوکس با عبور نور.
-   هدف: button / a / [role=button] با کلاس‌های رنگ برند (اصلی) یا سفید/خاکستری روشن (ثانویه). */
-:root {
-    --btn-neon: oklch(74% 0.19 150);
-    --btn-ease: cubic-bezier(0.22, 1, 0.36, 1);
+   اصلی: فیروزه‌ای توپر (primary-600، متن سفید 5.7:1) و hover یک پله تیره‌تر.
+   ثانویه: سطح سفید با border. فقط transform و رنگ؛ بدون افکت تزئینی. استثنا: .no-flat */
+:is(button, a, [role="button"]):is(.bg-brown-500, .bg-brown-600, .bg-brown-700, .bg-primary-500, .bg-primary-600, .bg-primary-700, .bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100):not(.no-flat, .product-tab) {
+    transition: transform 0.18s var(--ease-snap), box-shadow 0.18s var(--ease-snap), background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
 }
 
-.dark {
-    --btn-neon: oklch(78% 0.2 150);
+:is(button, a, [role="button"]):is(.bg-brown-500, .bg-brown-600, .bg-brown-700, .bg-primary-500, .bg-primary-600, .bg-primary-700):not(.no-flat) {
+    background-color: var(--color-primary-600);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+    box-shadow: 0 1px 2px 0 oklch(29% 0.05 206 / 0.25);
 }
 
-:is(button, a, [role="button"]):is(.bg-brown-500, .bg-brown-600, .bg-brown-700, .bg-primary-500, .bg-primary-600, .bg-primary-700, .bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100):not(.no-glass, .product-tab) {
-    isolation: isolate;
-    transition: transform 0.5s var(--btn-ease), box-shadow 0.5s var(--btn-ease), background-color 0.4s ease;
+:is(button, a, [role="button"]):is(.bg-brown-500, .bg-brown-600, .bg-brown-700, .bg-primary-500, .bg-primary-600, .bg-primary-700):not(.no-flat):hover {
+    background-color: var(--color-primary-700);
+    box-shadow: var(--shadow-lift);
 }
 
-:is(button, a, [role="button"]):is(.bg-brown-500, .bg-brown-600, .bg-brown-700, .bg-primary-500, .bg-primary-600, .bg-primary-700, .bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100):not(.no-glass, .product-tab, .absolute, .fixed, .sticky) {
-    position: relative;
+:is(button, a, [role="button"]):is(.bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100):not(.no-flat, .product-tab) {
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
 }
 
-/* نوار نوری که هنگام هاور یک‌بار از روی دکمه عبور می‌کند */
-:is(button, a, [role="button"]):is(.bg-brown-500, .bg-brown-600, .bg-brown-700, .bg-primary-500, .bg-primary-600, .bg-primary-700, .bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100):not(.no-glass, .product-tab)::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    z-index: -1;
-    border-radius: inherit;
-    pointer-events: none;
-    background: linear-gradient(115deg, transparent 30%, rgb(255 255 255 / 0.06) 40%, rgb(255 255 255 / 0.38) 50%, rgb(255 255 255 / 0.06) 60%, transparent 70%);
-    background-size: 260% 100%;
-    background-position: 120% 0;
-    opacity: 0;
-    transition: background-position 0.9s var(--btn-ease), opacity 0.3s ease;
+:is(button, a, [role="button"]):is(.bg-brown-500, .bg-brown-600, .bg-brown-700, .bg-primary-500, .bg-primary-600, .bg-primary-700, .bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100):not(.no-flat, .product-tab):active {
+    transform: scale(0.98);
 }
 
-:is(button, a, [role="button"]):is(.bg-brown-500, .bg-brown-600, .bg-brown-700, .bg-primary-500, .bg-primary-600, .bg-primary-700, .bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100):not(.no-glass, .product-tab):hover::after {
-    background-position: -20% 0;
-    opacity: 1;
-}
-
-:is(button, a, [role="button"]):is(.bg-brown-500, .bg-brown-600, .bg-brown-700, .bg-primary-500, .bg-primary-600, .bg-primary-700, .bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100):not(.no-glass, .product-tab):hover {
-    transform: translateY(-2px);
-}
-
-:is(button, a, [role="button"]):is(.bg-brown-500, .bg-brown-600, .bg-brown-700, .bg-primary-500, .bg-primary-600, .bg-primary-700, .bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100):not(.no-glass, .product-tab):active {
-    transform: translateY(0) scale(0.985);
-    transition-duration: 0.12s;
-}
-
-/* اصلی: سبز شالیزار نیمه‌شفاف (متن سفید ≥ 4.5:1) */
-:is(button, a, [role="button"]):is(.bg-brown-500, .bg-brown-600, .bg-brown-700, .bg-primary-500, .bg-primary-600, .bg-primary-700):not(.no-glass) {
-    background-color: color-mix(in oklab, var(--color-primary-600) 84%, transparent);
-    -webkit-backdrop-filter: blur(12px) saturate(160%);
-    backdrop-filter: blur(12px) saturate(160%);
-    box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 0.35),
-        inset 0 0 0 1px color-mix(in oklab, var(--btn-neon) 26%, transparent),
-        0 0 10px -3px color-mix(in oklab, var(--btn-neon) 26%, transparent),
-        0 2px 4px -1px rgb(22 57 33 / 0.14),
-        0 10px 20px -12px color-mix(in oklab, var(--btn-neon) 35%, rgb(22 57 33 / 0.35));
-}
-
-:is(button, a, [role="button"]):is(.bg-brown-500, .bg-brown-600, .bg-brown-700, .bg-primary-500, .bg-primary-600, .bg-primary-700):not(.no-glass):hover {
-    background-color: color-mix(in oklab, var(--color-primary-600) 92%, transparent);
-    box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 0.42),
-        inset 0 0 0 1px color-mix(in oklab, var(--btn-neon) 40%, transparent),
-        0 0 14px -3px color-mix(in oklab, var(--btn-neon) 36%, transparent),
-        0 4px 8px -2px rgb(22 57 33 / 0.16),
-        0 14px 26px -12px color-mix(in oklab, var(--btn-neon) 42%, rgb(22 57 33 / 0.38));
-}
-
-/* ثانویه: سفید شیشه‌ای با لبه نئونی نرم */
-:is(button, a, [role="button"]):is(.bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100):not(.no-glass, .product-tab) {
-    background-color: var(--glass-bg);
-    -webkit-backdrop-filter: blur(12px) saturate(160%);
-    backdrop-filter: blur(12px) saturate(160%);
-    box-shadow:
-        inset 0 1px 0 var(--glass-highlight),
-        inset 0 0 0 1px color-mix(in oklab, var(--btn-neon) 24%, transparent),
-        0 0 8px -3px color-mix(in oklab, var(--btn-neon) 20%, transparent),
-        0 2px 4px -1px rgb(22 57 33 / 0.07),
-        0 8px 18px -10px rgb(22 57 33 / 0.16);
-}
-
-:is(button, a, [role="button"]):is(.bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100):not(.no-glass, .product-tab):hover {
-    background-color: rgb(255 255 255 / 0.72);
-    box-shadow:
-        inset 0 1px 0 #fff,
-        inset 0 0 0 1px color-mix(in oklab, var(--btn-neon) 36%, transparent),
-        0 0 12px -3px color-mix(in oklab, var(--btn-neon) 28%, transparent),
-        0 4px 8px -2px rgb(22 57 33 / 0.1),
-        0 12px 24px -12px rgb(22 57 33 / 0.2);
-}
-
-.dark :is(button, a, [role="button"]):is(.bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100):not(.no-glass, .product-tab) {
-    box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 0.1),
-        inset 0 0 0 1px color-mix(in oklab, var(--btn-neon) 24%, transparent),
-        0 0 8px -3px color-mix(in oklab, var(--btn-neon) 20%, transparent),
-        0 8px 18px -10px rgb(0 0 0 / 0.5);
-}
-
-.dark :is(button, a, [role="button"]):is(.bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100):not(.no-glass, .product-tab):hover {
-    background-color: rgb(255 255 255 / 0.1);
-    box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 0.14),
-        inset 0 0 0 1px color-mix(in oklab, var(--btn-neon) 36%, transparent),
-        0 0 12px -3px color-mix(in oklab, var(--btn-neon) 28%, transparent),
-        0 12px 24px -12px rgb(0 0 0 / 0.6);
+:is(button, [role="button"]):disabled {
+    cursor: not-allowed;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    :is(button, a, [role="button"]):is(.bg-brown-500, .bg-brown-600, .bg-brown-700, .bg-primary-500, .bg-primary-600, .bg-primary-700, .bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100),
-    :is(button, a, [role="button"]):is(.bg-brown-500, .bg-brown-600, .bg-brown-700, .bg-primary-500, .bg-primary-600, .bg-primary-700, .bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100)::after {
-        transition: none;
+    *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+        scroll-behavior: auto !important;
     }
-    :is(button, a, [role="button"]):is(.bg-brown-500, .bg-brown-600, .bg-brown-700, .bg-primary-500, .bg-primary-600, .bg-primary-700, .bg-white, [class*="bg-white/"], .bg-gray-50, .bg-gray-100):hover {
-        transform: none;
-    }
-}
-
-/* ---------- دسترس‌پذیری و پشتیبانی مرورگر ---------- */
-@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
-    :root { --glass-bg: rgb(255 255 255 / 0.88); --glass-bg-nested: rgb(255 255 255 / 0.7); }
-    .dark { --glass-bg: rgb(30 32 27 / 0.92); }
-}
-
-@media (prefers-reduced-transparency: reduce) {
-    :root { --glass-bg: var(--color-white, #fff); --glass-bg-nested: var(--color-gray-50); }
-    .dark { --glass-bg: var(--color-gray-900); --glass-bg-nested: var(--color-gray-800); }
-    body::before { display: none; }
 }

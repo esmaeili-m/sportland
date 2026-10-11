@@ -43,8 +43,8 @@ new class extends Component
 <div>
     {{-- موقعیت و لایه نوار مستقل از build فایل CSS (بالای منوی پایین موبایل) --}}
     <style>
-        .bk-compare-bar { position: fixed; z-index: 60; left: 50%; translate: -50% 0; bottom: 6.75rem; width: 92%; max-width: 400px; }
-        @media (min-width: 768px) { .bk-compare-bar { bottom: 1.5rem; width: auto; max-width: 48rem; } }
+        .sl-compare-bar { position: fixed; z-index: 60; left: 50%; translate: -50% 0; bottom: 6.75rem; width: 92%; max-width: 400px; }
+        @media (min-width: 768px) { .sl-compare-bar { bottom: 1.5rem; width: auto; max-width: 48rem; } }
     </style>
 
     @if($this->products->isNotEmpty())
@@ -52,7 +52,7 @@ new class extends Component
                 open: (() => { try { return localStorage.getItem('compare-bar') !== 'closed' } catch (e) { return true } })(),
                 toggle() { this.open = !this.open; try { localStorage.setItem('compare-bar', this.open ? 'open' : 'closed') } catch (e) {} }
              }"
-             class="bk-compare-bar fixed z-[60] left-1/2 -translate-x-1/2 bottom-[6.75rem] md:bottom-6 w-[92%] max-w-[400px] md:w-auto md:max-w-3xl"
+             class="sl-compare-bar fixed z-[60] left-1/2 -translate-x-1/2 bottom-[6.75rem] md:bottom-6 w-[92%] max-w-[400px] md:w-auto md:max-w-3xl"
              dir="rtl">
 
             {{-- حالت جمع‌شده --}}

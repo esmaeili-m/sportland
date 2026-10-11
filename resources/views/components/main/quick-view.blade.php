@@ -7,7 +7,7 @@ use Illuminate\Support\Facades\Auth;
 
 /**
  * پیش‌نمایش سریع محصول (مودال)
- * باز شدن: $dispatch('bk-quick-view', { id }) روی هر دکمه‌ای در سایت
+ * باز شدن: $dispatch('sl-quick-view', { id }) روی هر دکمه‌ای در سایت
  */
 new class extends Component
 {
@@ -101,7 +101,7 @@ new class extends Component
 ?>
 
 <div x-data="{ show: false }"
-     x-on:bk-quick-view.window="show = true; document.documentElement.classList.add('overflow-hidden'); $wire.load($event.detail.id)"
+     x-on:sl-quick-view.window="show = true; document.documentElement.classList.add('overflow-hidden'); $wire.load($event.detail.id)"
      x-on:keydown.escape.window="if (show) { show = false; document.documentElement.classList.remove('overflow-hidden'); $wire.close() }">
 
     <div x-show="show" x-cloak

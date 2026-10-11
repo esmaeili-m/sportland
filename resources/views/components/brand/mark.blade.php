@@ -1,12 +1,15 @@
 {{--
-    نشان «برنج خطیر» (خوشه برنج) — نسخه موقت تا دریافت لوگوی رسمی. TODO(OWNER): لوگوی رسمی
-    رنگ از currentColor گرفته می‌شود؛ با کلاس text-* رنگ بدهید. هندسه = public/main/images/brand/mark.svg
+    نشان «اسپرت لند»: حرف S ایتالیک (مسیر پیست دو) با خطوط سرعت.
+    رنگ S از currentColor و رنگ خطوط سرعت از متغیر CSS ‎--mark-accent (پیش‌فرض: همان currentColor).
+    speed=false برای اندازه‌های خیلی کوچک (خطوط سرعت حذف می‌شوند). هندسه = public/main/images/brand/mark.svg
 --}}
-@props(['title' => null])
-<svg {{ $attributes->merge(['viewBox' => '10 5 56 56', 'xmlns' => 'http://www.w3.org/2000/svg', 'fill' => 'currentColor']) }}
+@props(['title' => null, 'speed' => true])
+<svg {{ $attributes->merge(['viewBox' => '0 0 48 48', 'xmlns' => 'http://www.w3.org/2000/svg', 'fill' => 'none']) }}
      @if($title) role="img" aria-label="{{ $title }}" @else aria-hidden="true" focusable="false" @endif>
-    <path d="M20 61C18 36 26 13 42 10C53 8 57 16 56 27" fill="none" stroke="currentColor" stroke-width="2.8" stroke-linecap="round"/>
-    @foreach([[27.6, 23.2, 22], [38, 17.9, -22], [41.4, 15.3, 22], [51, 15.8, -22], [50.1, 17.8, 22], [56.9, 21.3, -22], [53.7, 25.8, 22], [56.4, 33, -4]] as [$x, $y, $r])
-        <path d="M0-6.4C2.9-3.6 2.9 3.6 0 6.4C-2.9 3.6-2.9-3.6 0-6.4Z" transform="translate({{ $x }} {{ $y }}) rotate({{ $r }})"/>
-    @endforeach
+    <g stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" transform="skewX(-12) translate(6 0)">
+        <path d="M36 11H21.5a7.5 7.5 0 0 0 0 15h6a7.5 7.5 0 0 1 0 15H12" stroke-width="6"/>
+        @if($speed)
+            <path d="M5 18.5h7M3 26h8M5 33.5h4" stroke="var(--mark-accent, currentColor)" stroke-width="3"/>
+        @endif
+    </g>
 </svg>

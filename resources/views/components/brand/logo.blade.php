@@ -1,5 +1,5 @@
 {{--
-    لوگوی افقی «برنج خطیر / KHATIR RICE»: نشان + نام فارسی و لاتین (متن زنده با فونت سایت).
+    لوگوی افقی «اسپرت لند | Sport Land»: نشان + نام فارسی و لاتین (متن زنده با فونت سایت).
     نام‌ها از config/brand.php خوانده می‌شوند.
 --}}
 @props(['name' => null, 'nameEn' => null, 'size' => 'md', 'latin' => true])
@@ -11,9 +11,9 @@
     $latinSize = ['sm' => 'text-[9px]', 'md' => 'text-[9px] md:text-[11px]', 'lg' => 'text-xs'][$size] ?? 'text-[10px]';
 @endphp
 <span {{ $attributes->class('inline-flex items-center gap-2 min-w-0') }}>
-    <x-brand.mark class="{{ $markSize }} shrink-0 text-primary-600 dark:text-primary-400"/>
+    <x-brand.mark class="{{ $markSize }} shrink-0 text-primary-600 dark:text-primary-400 [--mark-accent:var(--color-secondary-500)] dark:[--mark-accent:var(--color-secondary-400)]"/>
     <span class="flex flex-col min-w-0 leading-none">
-        <span class="truncate {{ $textSize }} font-black text-gray-900 dark:text-white">{{ $name }}</span>
+        <span class="truncate {{ $textSize }} font-black text-gray-900 dark:text-white [word-spacing:0.12em]">{{ $name }}</span>
         @if($latin && $nameEn)
             <span class="mt-1 {{ $latinSize }} font-bold tracking-[0.28em] text-primary-700 dark:text-primary-300" dir="ltr" lang="en">{{ $nameEn }}</span>
         @endif
