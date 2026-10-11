@@ -137,7 +137,7 @@ new class extends Component
             @if($data['show_cta'] ?? true)
                 <div class="flex justify-center">
                     <a href="{{ route('user.dashboard', ['tab' => 'orders']) }}"
-                       class="inline-flex items-center gap-3 px-10 py-4 bg-brown-600 text-white rounded-[2rem] font-black text-[14px] shadow-[0_20px_40px_rgba(43,99,61,0.25)] hover:bg-brown-700 dark:hover:bg-brown-500 transition-all duration-500 active:scale-95">
+                       class="inline-flex items-center gap-3 px-10 py-4 bg-brown-600 text-white rounded-[2rem] font-black text-[14px] shadow-[0_20px_40px_rgba(0,115,117,0.25)] hover:bg-brown-700 dark:hover:bg-brown-500 transition-all duration-500 active:scale-95">
                         ثبت درخواست مرجوعی از سفارش‌های من
                         <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-width="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
                     </a>

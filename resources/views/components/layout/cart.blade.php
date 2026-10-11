@@ -407,9 +407,15 @@ new class extends Component
 
                                 <div class="flex justify-between items-start">
 
-                                    <h4 class="text-[13px] font-black text-gray-800 dark:text-gray-100 line-clamp-2">
-                                        {{ $item->title }}
-                                    </h4>
+                                    <div class="min-w-0">
+                                        <h4 class="text-[13px] font-black text-gray-800 dark:text-gray-100 line-clamp-2">
+                                            {{ $item->title }}
+                                        </h4>
+                                        {{-- سایز / رنگ انتخاب‌شده --}}
+                                        @if($item->variant)
+                                            <p class="mt-1 text-xs font-bold text-gray-600 dark:text-gray-400">{{ $item->variant->label }}</p>
+                                        @endif
+                                    </div>
 
 
                                     {{-- Remove --}}

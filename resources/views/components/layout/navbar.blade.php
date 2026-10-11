@@ -256,11 +256,10 @@ new class extends Component
                     <li class="mr-auto flex items-center gap-4">
                         <div class="h-4 w-[1px] bg-gray-200 dark:bg-gray-800"></div>
 
-                        <a href="#" class="flex items-center gap-1.5 text-xs font-bold text-gray-500 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
-                            <svg class="w-4 h-4 text-secondary-500" fill="currentColor" viewBox="0 0 20 20">
-                                <path fill-rule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"></path>
-                            </svg>
-                            ارسال به: <span class="text-gray-800 dark:text-gray-200">سراسر کشور</span>
+                        {{-- محدوده‌ی ارسال تا تأیید مالک ادعا نمی‌شود — TODO(OWNER) --}}
+                        <a href="{{ route('user.dashboard', ['tab' => 'orders']) }}" class="flex items-center gap-1.5 text-xs font-bold text-gray-600 dark:text-gray-400 hover:text-primary-600 dark:hover:text-primary-400 transition-colors">
+                            <svg class="w-4 h-4 text-primary-600 dark:text-primary-400" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4"/></svg>
+                            پیگیری سفارش
                         </a>
                     </li>
                 </ul>

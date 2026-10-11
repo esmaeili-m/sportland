@@ -257,7 +257,20 @@ new class extends Component
                                 <svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
                             </span>
                             <h3 class="text-lg font-black text-gray-700 dark:text-gray-200">نتیجه‌ای پیدا نشد</h3>
-                            <p class="text-xs text-gray-400 mt-2">املای عبارت را بررسی کنید یا عبارت کوتاه‌تر و کلی‌تری را امتحان کنید.</p>
+                            <p class="text-sm text-gray-600 dark:text-gray-400 mt-2">املای عبارت را بررسی کنید یا عبارت کوتاه‌تر و کلی‌تری را امتحان کنید (مثلاً «کفش دویدن» به‌جای نام کامل مدل).</p>
+
+                            {{-- پیشنهاد جایگزین: دسته‌های اصلی واقعی فروشگاه --}}
+                            @php($suggestedCategories = \App\Models\Category::active()->whereNull('parent_id')->orderBy('sort')->take(6)->get(['title', 'slug']))
+                            @if($suggestedCategories->isNotEmpty())
+                                <div class="mt-8">
+                                    <p class="text-xs font-black text-gray-700 dark:text-gray-300 mb-3">مرور دسته‌بندی‌ها</p>
+                                    <div class="flex flex-wrap justify-center gap-2">
+                                        @foreach($suggestedCategories as $suggested)
+                                            <a href="{{ route('categories.show', $suggested->slug) }}" class="inline-flex items-center min-h-11 px-4 rounded-xl border border-gray-200 dark:border-white/10 text-sm font-bold text-gray-800 dark:text-gray-200 hover:border-primary-500 hover:text-primary-700 dark:hover:text-primary-300 transition-colors">{{ $suggested->title }}</a>
+                                        @endforeach
+                                    </div>
+                                </div>
+                            @endif
                         </div>
 
                     @elseif($type === 'all')

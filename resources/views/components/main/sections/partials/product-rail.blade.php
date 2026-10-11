@@ -19,7 +19,7 @@
     @media (min-width: 1536px) { .sl-slide { width: calc((100% - 5rem) / 5); } }
     .sl-rail { padding-block: 1.25rem; margin-block: -1.25rem; }
     .sl-slide-card { border-radius: 1.75rem; box-shadow: 0 6px 24px -12px rgba(60,40,20,.18); transition: transform .5s, box-shadow .5s, border-color .5s; }
-    .sl-slide-card:hover { transform: translateY(-.375rem); box-shadow: 0 22px 40px -18px rgba(43,99,61,.35); border-color: rgba(43,99,61,.2); }
+    .sl-slide-card:hover { transform: translateY(-.375rem); box-shadow: 0 22px 40px -18px rgba(0,115,117,.35); border-color: rgba(0,115,117,.2); }
     .sl-slide-actions { top: 1.25rem; left: 1.25rem; }
     .sl-slide-info { padding-top: .875rem; }
     .sl-slide-old { line-height: 1rem; }

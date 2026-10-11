@@ -623,7 +623,7 @@ new class extends Component
                                         class="w-2 h-8
                            bg-primary-500
                            rounded-full
-                           shadow-[0_0_15px_rgba(43,99,61,0.5)]"
+                           shadow-[0_0_15px_rgba(0,115,117,0.5)]"
                                     ></div>
 
                                     <h3

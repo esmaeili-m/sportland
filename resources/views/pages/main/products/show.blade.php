@@ -19,6 +19,9 @@ new class extends Component
     public string $prosInput = '';
     public string $consInput = '';
     public array $selectedOptions = [];
+    // آیا کاربر سایز را خودش انتخاب کرده است (برای جلوگیری از افزودن سایز پیش‌فرض به سبد)
+    public bool $sizeChosen = true;
+    public bool $sizeError = false;
     public bool $isWishlisted = false;
     public bool $isCompared = false;
     public function mount($product)
@@ -31,6 +34,19 @@ new class extends Component
         }
         $this->selectedVariant = $this->product->cheapestVariant
             ?? $this->product->variants->first();
+
+        // سایز باید آگاهانه انتخاب شود؛ اگر محصول ویژگی سایز ندارد یا فقط یک سایز دارد، نیازی نیست
+        $this->sizeChosen = $this->sizeValueCount() <= 1;
+
+        // سئوی صفحه (عنوان، توضیح، تصویر OG) برای layouts.main
+        $description = trim(preg_replace('/\s+/u', ' ', strip_tags((string) ($this->product->short_description ?: $this->product->description))));
+        view()->share('seo', [
+            'title' => $this->product->title,
+            'description' => \Illuminate\Support\Str::limit($description, 160, '…'),
+            'og_image' => $this->product->featuredImageUrl,
+            'og_type' => 'product',
+            'canonical' => route('products.show', $this->product->slug),
+        ]);
 
         $this->isWishlisted = Auth::check()
             && Auth::user()->hasInWishlist($this->product->id);
@@ -237,8 +253,44 @@ new class extends Component
         $this->cons = array_values($this->cons);
     }
 
+    /** شناسه ویژگی «سایز» محصول (بر اساس عنوان یا slug ویژگی) */
+    public function sizeOptionId(): ?int
+    {
+        return $this->product->options
+            ->first(fn ($option) => preg_match('/سایز|size/iu', $option->title . ' ' . $option->slug))
+            ?->id;
+    }
+
+    /** تعداد مقدارهای متفاوت سایز در واریانت‌های محصول */
+    protected function sizeValueCount(): int
+    {
+        $sizeOptionId = $this->sizeOptionId();
+
+        if (! $sizeOptionId) {
+            return 0;
+        }
+
+        return $this->product->variants
+            ->pluck('values')
+            ->flatten()
+            ->where('option_id', $sizeOptionId)
+            ->unique('id')
+            ->count();
+    }
+
     public function addToCart(): void
     {
+        if (! $this->selectedVariant) {
+            $this->dispatch('alert', type: 'error', message: 'این ترکیب از محصول موجود نیست.');
+            return;
+        }
+
+        if (! $this->sizeChosen) {
+            $this->sizeError = true;
+            $this->dispatch('alert', type: 'warning', message: 'لطفاً ابتدا سایز را انتخاب کنید.');
+            return;
+        }
+
         $variantId=$this->selectedVariant->id;
         if (! Auth::check()) {
             $this->dispatch('alert', type: 'error', message: 'برای خرید ابتدا وارد شوید.');
@@ -275,34 +327,36 @@ new class extends Component
     {
         $newValue = \App\Models\OptionValue::findOrFail($valueId);
 
-        // مقادیر Variant فعلی
-        $currentValues = $this->selectedVariant->values;
-        // فقط مقدار ویژگی‌ای که کلیک شده را عوض کن
-        $newValueIds = $currentValues
-            ->map(function ($value) use ($newValue) {
+        // فقط واریانت‌هایی از همین محصول که این مقدار را دارند
+        $candidates = $this->product->variants
+            ->filter(fn ($variant) => $variant->values->contains('id', $newValue->id));
 
-                if ($value->option_id == $newValue->option_id) {
-                    return $newValue->id;
-                }
+        if ($candidates->isEmpty()) {
+            return;
+        }
 
-                return $value->id;
-            })
+        // مقادیر Variant فعلی؛ فقط مقدار ویژگی‌ای که کلیک شده عوض می‌شود
+        $newValueIds = ($this->selectedVariant?->values ?? collect())
+            ->map(fn ($value) => $value->option_id == $newValue->option_id ? $newValue->id : $value->id)
+            ->push($newValue->id)
+            ->unique()
+            ->sort()
+            ->values()
             ->toArray();
-        // Variant جدید را پیدا کن
-        $this->selectedVariant = $this->product->variants
-            ->first(function ($variant) use ($newValueIds) {
 
-                return $variant->values
-                        ->pluck('id')
-                        ->sort()
-                        ->values()
-                        ->toArray()
-                    ==
-                    collect($newValueIds)
-                        ->sort()
-                        ->values()
-                        ->toArray();
-            });
+        // ۱) ترکیب دقیق  ۲) اگر نبود: واریانت موجود با بیشترین اشتراک با انتخاب فعلی  ۳) هر واریانت دارای این مقدار
+        $overlap = fn ($variant) => count(array_intersect($variant->values->pluck('id')->all(), $newValueIds));
+
+        $this->selectedVariant = $candidates->first(
+                fn ($variant) => $variant->values->pluck('id')->sort()->values()->toArray() == $newValueIds
+            )
+            ?? $candidates->filter(fn ($variant) => $variant->isInStock())->sortByDesc($overlap)->first()
+            ?? $candidates->sortByDesc($overlap)->first();
+
+        if ($newValue->option_id === $this->sizeOptionId()) {
+            $this->sizeChosen = true;
+            $this->sizeError = false;
+        }
     }
     private function stockForVariant(int $variantId): int
     {
@@ -509,20 +563,55 @@ new class extends Component
         <!-- CONTENT -->
         <!-- CONTENT -->
         @php
-            // موجودی واریانت انتخاب‌شده
-            $inStock = $selectedVariant->isInStock();
+            // واریانت انتخاب‌شده (ممکن است ترکیب انتخابی وجود نداشته باشد)
+            $inStock = (bool) $selectedVariant?->isInStock();
 
-            // شناسه‌ی مقدارهایی (رنگ/سایز/...) که حداقل یک واریانت موجود دارند
-            $availableValueIds = $product->variants
-                ->filter(fn ($v) => $v->isInStock())
-                ->pluck('values')
-                ->flatten()
-                ->pluck('id')
-                ->unique()
-                ->all();
+            // واریانت‌های موجود و مقدارهایی (رنگ/سایز/...) که حداقل یک واریانت موجود دارند
+            $inStockVariants = $product->variants->filter(fn ($v) => $v->isInStock());
+            $availableValueIds = $inStockVariants->pluck('values')->flatten()->pluck('id')->unique()->all();
+            $selectedValues = $selectedVariant?->values ?? collect();
+            $sizeOptionId = $this->sizeOptionId();
 
-            $pricing = $selectedVariant->priceData();
+            $pricing = $selectedVariant?->priceData() ?? ['has_discount' => false, 'before_discount' => 0, 'after_discount' => 0, 'discount_percent' => 0];
+
+            // امتیاز واقعی از دیدگاه‌های تأییدشده (بدون عدد پیش‌فرض)
+            $ratedComments = $product->comments->whereNotNull('rating')->where('rating', '>', 0);
+            $ratingCount = $ratedComments->count();
+            $ratingAverage = $ratingCount ? round($ratedComments->avg('rating'), 1) : null;
+
+            $sizeGuidePage = \App\Models\Page::query()->where('slug', 'size-guide')->where('status', true)->exists();
         @endphp
+
+        {{-- داده ساختاریافته محصول و مسیر صفحه (فقط داده واقعی). قیمت‌ها تومان هستند و برای schema به ریال (IRR) تبدیل می‌شوند --}}
+        @push('structured-data')
+            <script type="application/ld+json">{!! json_encode(array_filter([
+                '@context' => 'https://schema.org',
+                '@type' => 'Product',
+                'name' => $product->title,
+                'image' => $product->featuredImageUrl,
+                'sku' => $selectedVariant?->sku ?: null,
+                'description' => \Illuminate\Support\Str::limit(trim(strip_tags((string) ($product->short_description ?: $product->description))), 300, '…') ?: null,
+                'brand' => $product->brand ? ['@type' => 'Brand', 'name' => $product->brand->title] : null,
+                'offers' => $selectedVariant ? [
+                    '@type' => 'Offer',
+                    'url' => route('products.show', $product->slug),
+                    'priceCurrency' => 'IRR',
+                    'price' => (int) $pricing['after_discount'] * 10,
+                    'availability' => $inStock ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock',
+                    'itemCondition' => 'https://schema.org/NewCondition',
+                ] : null,
+                'aggregateRating' => $ratingCount ? ['@type' => 'AggregateRating', 'ratingValue' => $ratingAverage, 'reviewCount' => $ratingCount, 'bestRating' => 5, 'worstRating' => 1] : null,
+            ]), JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+            <script type="application/ld+json">{!! json_encode([
+                '@context' => 'https://schema.org',
+                '@type' => 'BreadcrumbList',
+                'itemListElement' => array_values(array_filter([
+                    ['@type' => 'ListItem', 'position' => 1, 'name' => 'خانه', 'item' => url('/')],
+                    $product->primaryCategory ? ['@type' => 'ListItem', 'position' => 2, 'name' => $product->primaryCategory->title, 'item' => route('categories.show', $product->primaryCategory->slug)] : null,
+                    ['@type' => 'ListItem', 'position' => $product->primaryCategory ? 3 : 2, 'name' => $product->title],
+                ])),
+            ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES) !!}</script>
+        @endpush
 
         <section class="product-hero relative pt-8 overflow-hidden">
             <div class="absolute top-0 right-0 w-[400px] h-[400px] bg-brown-600/5 blur-[100px] rounded-full -z-10 animate-pulse"></div>
@@ -530,27 +619,33 @@ new class extends Component
             <div class="relative z-10 px-4">
 
                 {{-- Breadcrumb --}}
-                <nav class="flex items-center gap-2 mb-8 text-[11px] font-bold text-gray-400 dark:text-gray-500">
-                    <a href="index.html" class="hover:text-brown-600 transition-colors">خانه</a>
-                    <i class="far fa-chevron-left text-[8px] opacity-40"></i>
-                    <span class="text-gray-900 dark:text-white font-black">{{ $product->title }}</span>
+                <nav aria-label="مسیر صفحه" class="mb-8">
+                    <ol class="flex flex-wrap items-center gap-2 text-xs font-bold text-gray-500 dark:text-gray-400">
+                        <li><a href="{{ route('home') }}" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">خانه</a></li>
+                        @if($product->primaryCategory)
+                            <li aria-hidden="true" class="text-gray-300 dark:text-gray-600">/</li>
+                            <li><a href="{{ route('categories.show', $product->primaryCategory->slug) }}" class="hover:text-primary-600 dark:hover:text-primary-400 transition-colors">{{ $product->primaryCategory->title }}</a></li>
+                        @endif
+                        <li aria-hidden="true" class="text-gray-300 dark:text-gray-600">/</li>
+                        <li aria-current="page" class="text-gray-900 dark:text-white font-black line-clamp-1">{{ $product->title }}</li>
+                    </ol>
                 </nav>
 
                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
 
                     {{-- ===================== Gallery column ===================== --}}
-                    <div class="lg:col-span-5 space-y-6 flex flex-col items-center justify-center {{ $inStock ? '' : 'grayscale opacity-70 pointer-events-none select-none' }}">
+                    <div class="lg:col-span-5 space-y-6 flex flex-col items-center justify-center {{ $inStockVariants->isNotEmpty() ? '' : 'grayscale opacity-70' }}">
 
                         <div class="relative group bg-white/40 dark:bg-black/20 backdrop-blur-md rounded-[3rem] border border-white/60 dark:border-white/5 shadow-lg p-6 overflow-hidden w-full">
 
                             {{-- Out of stock stamp --}}
-                            @unless($inStock)
+                            @if($inStockVariants->isEmpty())
                                 <div class="absolute inset-0 z-[110] flex items-center justify-center pointer-events-none">
                                     <div class="px-8 py-3 bg-zinc-900/90 dark:bg-white/10 backdrop-blur-md border border-white/20 rounded-2xl shadow-lg transform -rotate-12">
                                         <span class="text-white text-2xl font-black">ناموجود</span>
                                     </div>
                                 </div>
-                            @endunless
+                            @endif
 
                             {{-- Icon box --}}
                             <div class="absolute top-6 left-1/2 -translate-x-1/2 z-[100] isolate">
@@ -651,32 +746,44 @@ new class extends Component
 
                         {{-- Title block --}}
                         <div class="space-y-3">
-                            <div class="flex items-center gap-3">
-                        <span class="text-[10px] font-black px-3 py-1 rounded-lg {{ $inStock ? 'text-brown-600 bg-brown-600/10' : 'text-gray-400 bg-gray-400/10' }}">
-                            {{ $product->primaryCategory?->title }}
-                        </span>
-                                <span class="text-[10px] font-bold text-gray-400">شناسه کالا: {{ $product->barcode }}</span>
+                            <div class="flex flex-wrap items-center gap-3">
+                                @if($product->primaryCategory)
+                                    <a href="{{ route('categories.show', $product->primaryCategory->slug) }}" class="text-[11px] font-black px-3 py-1 rounded-lg text-primary-700 bg-primary-50 dark:text-primary-300 dark:bg-primary-500/10 hover:bg-primary-100 transition-colors">
+                                        {{ $product->primaryCategory->title }}
+                                    </a>
+                                @endif
+                                @if($product->brand)
+                                    <span class="text-[11px] font-black text-gray-700 dark:text-gray-300">{{ $product->brand->title }}</span>
+                                @endif
+                                @if($product->barcode)
+                                    <span class="text-[11px] font-bold text-gray-500">شناسه کالا: <span dir="ltr">{{ $product->barcode }}</span></span>
+                                @endif
                             </div>
 
-                            <h1 class="text-2xl font-black leading-relaxed {{ $inStock ? 'text-gray-900 dark:text-white' : 'text-gray-400 dark:text-zinc-600' }}">
+                            <h1 class="text-2xl font-black leading-relaxed text-gray-900 dark:text-white">
                                 {{ $product->title }}
                             </h1>
 
-                            <div class="flex items-center gap-6">
-                                <div class="flex items-center gap-1.5 text-xs font-black {{ $inStock ? 'text-secondary-500' : 'text-gray-400' }}">
-                                    <i class="fas fa-star"></i> <span class="tabular-nums">۴.۸</span>
-                                    <span class="text-gray-400 font-bold mr-1">({{ $product->comments->count() }} دیدگاه)</span>
-                                </div>
-                                <div class="w-[1px] h-4 bg-gray-200 dark:bg-white/10"></div>
-                                <a href="#tab-faq" wire:click="$set('activeTab', 'faq')" class="text-brown-500 text-[11px] font-bold hover:underline">پرسش و پاسخ ({{ $product->questions()->active()->count() }})</a>
-                                <div class="w-[1px] h-4 bg-gray-200 dark:bg-white/10"></div>
+                            <div class="flex flex-wrap items-center gap-x-6 gap-y-2">
+                                {{-- امتیاز فقط وقتی دیدگاه امتیازدار تأییدشده وجود دارد --}}
+                                @if($ratingCount)
+                                    <a href="#product-tabs" wire:click="$set('activeTab', 'reviews')" class="flex items-center gap-1.5 text-xs font-black text-gray-800 dark:text-gray-200 hover:text-primary-600">
+                                        <svg class="w-4 h-4 text-secondary-500" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                                        <span class="tabular-nums">{{ $ratingAverage }}</span>
+                                        <span class="text-gray-500 font-bold">({{ $ratingCount }} امتیاز)</span>
+                                    </a>
+                                @else
+                                    <span class="text-[11px] font-bold text-gray-500">هنوز امتیازی ثبت نشده</span>
+                                @endif
+                                <a href="#product-tabs" wire:click="$set('activeTab', 'faq')" class="text-primary-700 dark:text-primary-300 text-[11px] font-bold hover:underline">پرسش و پاسخ ({{ $product->questions()->active()->count() }})</a>
                                 <button
                                     type="button"
                                     wire:click="toggleWishlist"
                                     wire:loading.attr="disabled"
                                     wire:target="toggleWishlist"
-                                    class="flex items-center gap-1.5 text-[11px] font-bold transition-colors disabled:opacity-50 {{ $isWishlisted ? 'text-red-500' : 'text-gray-400 hover:text-red-500' }}">
-                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="{{ $isWishlisted ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                                    aria-pressed="{{ $isWishlisted ? 'true' : 'false' }}"
+                                    class="flex items-center gap-1.5 min-h-11 text-[11px] font-bold transition-colors disabled:opacity-50 {{ $isWishlisted ? 'text-red-600' : 'text-gray-500 hover:text-red-600' }}">
+                                    <svg class="w-4 h-4" viewBox="0 0 24 24" fill="{{ $isWishlisted ? 'currentColor' : 'none' }}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                                     {{ $isWishlisted ? 'در علاقه‌مندی‌ها' : 'افزودن به علاقه‌مندی' }}
                                 </button>
                             </div>
@@ -685,50 +792,86 @@ new class extends Component
                         <div class="grid grid-cols-1 xl:grid-cols-12 gap-6">
 
                             {{-- ---------- Options / specs ---------- --}}
-                            <div class="xl:col-span-7 space-y-6 {{ $inStock ? '' : 'opacity-50 pointer-events-none select-none' }}">
+                            <div class="xl:col-span-7 space-y-6">
 
-                                {{-- Variant options --}}
+                                {{-- Variant options: سایزها/رنگ‌های بدون موجودی غیرفعال‌اند --}}
                                 <div class="space-y-6">
                                     @foreach($product->options ?? [] as $option)
-                                        <div class="space-y-4">
-                                            <p class="text-[13px] font-black text-gray-900 dark:text-white">
-                                                {{ $option->title }}:
-                                                <span id="selected-option-{{ $option->id }}" class="text-gray-500 font-bold">
-                                            {{ $selectedVariant->values->where('option_id', $option->id)->first()?->title }}
-                                        </span>
-                                            </p>
+                                        @php
+                                            $isSize = $option->id === $sizeOptionId;
+                                            $optionValues = $product->variants->pluck('values')->flatten()->where('option_id', $option->id)->unique('id')->sortBy('sort');
+                                            $isColor = $option->display_type === 'color' || ($option->display_type === null && $optionValues->whereNotNull('color_code')->isNotEmpty());
+                                            $currentValue = $selectedValues->firstWhere('option_id', $option->id);
+                                            // مقدارهای انتخاب‌شده‌ی سایر ویژگی‌ها (برای تشخیص ترکیب موجود)
+                                            $otherSelected = $selectedValues->where('option_id', '!=', $option->id)->pluck('id');
+                                        @endphp
+                                        <fieldset class="space-y-3" @if($isSize) id="size-picker" @endif>
+                                            <div class="flex items-center justify-between gap-3">
+                                                <legend class="text-[13px] font-black text-gray-900 dark:text-white">
+                                                    {{ $option->title }}:
+                                                    <span class="font-bold {{ $isSize && ! $sizeChosen ? 'text-secondary-700 dark:text-secondary-300' : 'text-gray-600 dark:text-gray-400' }}">
+                                                        {{ $isSize && ! $sizeChosen ? 'انتخاب کنید' : $currentValue?->title }}
+                                                    </span>
+                                                </legend>
+                                                @if($isSize)
+                                                    <button type="button" x-data @click="$dispatch('open-size-guide')"
+                                                            class="inline-flex items-center gap-1.5 min-h-11 text-[12px] font-bold text-primary-700 dark:text-primary-300 hover:underline underline-offset-4">
+                                                        <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M3 7h18v10H3zM7 7v4m4-4v2m4-2v4m4-4v2"/></svg>
+                                                        راهنمای انتخاب سایز
+                                                    </button>
+                                                @endif
+                                            </div>
 
                                             <div class="flex flex-wrap gap-2">
-                                                @foreach($product->variants->pluck('values')->flatten()->where('option_id', $option->id)->unique('slug') as $item)
+                                                @foreach($optionValues as $item)
                                                     @php
-                                                        $isActive = $selectedVariant->values
-                                                            ->where('option_id', $option->id)
-                                                            ->contains('slug', $item->slug);
-
+                                                        $isActive = $currentValue?->id === $item->id && (! $isSize || $sizeChosen);
+                                                        // با انتخاب‌های فعلی موجود است؟ / در ترکیب دیگری موجود است؟ / اصلاً موجود نیست
+                                                        $comboInStock = $inStockVariants->contains(fn ($v) => $v->values->contains('id', $item->id) && $otherSelected->diff($v->values->pluck('id'))->isEmpty());
                                                         $valueOut = ! in_array($item->id, $availableValueIds);
+                                                        $label = $item->title . ($valueOut ? ' (ناموجود)' : (! $comboInStock ? ' (موجود در ترکیب دیگر)' : ''));
+                                                        $hasUnavailable = ($hasUnavailable ?? false) || $valueOut || ! $comboInStock;
                                                     @endphp
-                                                    <button
-                                                        type="button"
-                                                        wire:click="selectOption({{ $item->id }})"
-                                                        class="option-btn px-4 py-2 rounded-xl
-                                                    {{ $isActive ? 'border-2 border-brown-600 shadow-lg shadow-brown-600/25' : 'border-2 border-transparent' }}
-                                                    {{ $valueOut ? 'opacity-50 line-through' : '' }}
-                                                    bg-white dark:bg-white/5
-                                                    text-gray-700 dark:text-gray-300
-                                                    text-xs font-bold
-                                                    shadow-[0_3px_12px_rgba(0,0,0,0.08)]
-                                                    dark:shadow-[0_3px_12px_rgba(0,0,0,0.25)]
-                                                    hover:-translate-y-0.5
-                                                    hover:shadow-[0_5px_16px_rgba(0,0,0,0.12)]
-                                                    dark:hover:shadow-[0_5px_16px_rgba(0,0,0,0.3)]
-                                                    transition-all duration-200"
-                                                    >
-                                                        {{ $item->title }}
-                                                    </button>
+                                                    @if($isColor)
+                                                        <button type="button"
+                                                                wire:click="selectOption({{ $item->id }})"
+                                                                @disabled($valueOut)
+                                                                aria-pressed="{{ $isActive ? 'true' : 'false' }}"
+                                                                aria-label="{{ $label }}"
+                                                                title="{{ $label }}"
+                                                                class="relative w-11 h-11 rounded-full p-1 border-2 transition-colors {{ $isActive ? 'border-primary-600 dark:border-primary-400' : 'border-gray-200 dark:border-white/10 hover:border-gray-400' }} {{ $valueOut ? 'opacity-40' : '' }}">
+                                                            <span class="block w-full h-full rounded-full border border-black/10" style="background-color: {{ preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $item->color_code) ? $item->color_code : '#d1d5db' }}"></span>
+                                                            @if($valueOut)
+                                                                <span class="absolute inset-0 m-auto w-[2px] h-[120%] bg-gray-500 rotate-45 rounded-full" aria-hidden="true"></span>
+                                                            @endif
+                                                        </button>
+                                                    @else
+                                                        <button type="button"
+                                                                wire:click="selectOption({{ $item->id }})"
+                                                                @disabled($valueOut)
+                                                                aria-pressed="{{ $isActive ? 'true' : 'false' }}"
+                                                                aria-label="{{ $label }}"
+                                                                class="option-btn min-w-12 min-h-11 px-4 rounded-xl border-2 text-sm font-bold tabular-nums transition-colors
+                                                                    {{ $isActive ? 'border-primary-600 bg-primary-50 text-primary-800 dark:border-primary-400 dark:bg-primary-500/10 dark:text-primary-200' : 'border-gray-200 bg-white text-gray-800 hover:border-gray-400 dark:border-white/10 dark:bg-white/5 dark:text-gray-200' }}
+                                                                    {{ $valueOut ? 'opacity-40 line-through cursor-not-allowed hover:border-gray-200' : '' }}
+                                                                    {{ ! $valueOut && ! $comboInStock ? 'border-dashed' : '' }}">
+                                                            {{ $item->title }}
+                                                        </button>
+                                                    @endif
                                                 @endforeach
                                             </div>
-                                        </div>
+
+                                            @if($isSize && $sizeError && ! $sizeChosen)
+                                                <p role="alert" class="text-xs font-bold text-red-600 dark:text-red-400">برای افزودن به سبد، ابتدا سایز را انتخاب کنید.</p>
+                                            @endif
+                                        </fieldset>
                                     @endforeach
+
+                                    @if($hasUnavailable ?? false)
+                                        <p class="text-[11px] font-bold text-gray-500 leading-6">
+                                            گزینه‌های خط‌خورده موجود نیستند؛ گزینه‌های خط‌چین فقط در ترکیب دیگری موجودند.
+                                        </p>
+                                    @endif
                                 </div>
 
                                 {{-- Specifications --}}
@@ -762,69 +905,34 @@ new class extends Component
 
                             {{-- ---------- Meta / buy box ---------- --}}
                             <div class="xl:col-span-5 space-y-4">
-                                <div class="bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 rounded-[2.5rem] p-6 space-y-6">
+                                <div class="bg-gray-50 dark:bg-white/[0.03] border border-gray-100 dark:border-white/5 rounded-[2rem] p-6 space-y-6">
 
-                                    {{-- Seller + guarantees --}}
-                                    <div class="space-y-6">
-                                        <div class="flex items-center justify-between group cursor-pointer">
-                                            <div class="flex items-center gap-4">
-                                                <div class="relative">
-                                                    <div class="w-12 h-12 rounded-2xl bg-white dark:bg-white/5 flex items-center justify-center border border-gray-100 dark:border-white/10 shadow-sm transition-all group-hover:shadow-md group-hover:border-brown-500/30">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 text-gray-500 dark:text-gray-400 group-hover:text-brown-600 transition-colors">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M13.5 21v-7.5a.75.75 0 0 1 .75-.75h3a.75.75 0 0 1 .75.75V21m-4.5 0H2.36m11.14 0H18m0 0h3.64m-1.39 0V9.349M3.75 21V9.349m0 0a3.001 3.001 0 0 0 3.75-.615 3.001 3.001 0 0 0 3.75.615 3.001 3.001 0 0 0 3.75-.615 3.001 3.001 0 0 0 3.75.615m-15 0-1.44-2.16A1.5 1.5 0 0 1 2.46 5.43l1.11-1.665A1.5 1.5 0 0 1 4.808 3h14.384a1.5 1.5 0 0 1 1.238.765l1.11 1.665a1.5 1.5 0 0 1-1.24 2.33l-1.44 2.16"></path>
-                                                        </svg>
-                                                    </div>
-                                                    <div class="absolute -bottom-1 -right-1 w-5 h-5 bg-emerald-500 rounded-full border-2 border-white dark:border-[#121212] flex items-center justify-center shadow-lg">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-3 h-3 text-white">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="m4.5 12.75 6 6 9-13.5"></path>
-                                                        </svg>
-                                                    </div>
-                                                </div>
-
-                                                <a href="{{ route('page.show', 'about-us') }}" class="cursor-pointer group">
-                                                    <p class="text-[14px] font-black text-gray-900 dark:text-white group-hover:text-brown-600 transition-colors">فروشنده: {{ config('brand.name') }}</p>
-                                                    <div class="flex items-center gap-2 mt-1">
-                                                        <div class="flex items-center gap-1 bg-emerald-50 dark:bg-emerald-500/10 px-2 py-0.5 rounded-lg border border-emerald-100/50 dark:border-emerald-500/20">
-                                                            <span class="text-[10px] font-black text-emerald-700 dark:text-emerald-400">۴.۸</span>
-                                                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-2.5 h-2.5 text-emerald-500">
-                                                                <path fill-rule="evenodd" d="M10.788 3.21c.448-1.077 1.976-1.077 2.424 0l2.082 5.006 5.404.434c1.164.093 1.636 1.545.749 2.305l-4.117 3.527 1.257 5.273c.271 1.136-.964 2.033-1.96 1.425L12 18.354 7.373 21.18c-.996.608-2.231-.29-1.96-1.425l1.257-5.273-4.117-3.527c-.887-.76-.415-2.212.749-2.305l5.404-.434 2.082-5.005Z" clip-rule="evenodd"></path>
-                                                            </svg>
-                                                        </div>
-                                                        <span class="text-[10px] font-bold text-gray-400 dark:text-gray-500">مشاهده اطلاعات فروشنده</span>
-                                                    </div>
-                                                </a>
+                                    {{-- فروشنده و قابلیت‌های واقعی فروشگاه (بدون امتیاز یا وعده‌ی زمان ارسال ساختگی) --}}
+                                    <div class="space-y-4">
+                                        <a href="{{ route('page.show', 'about-us') }}" class="flex items-center gap-4 group">
+                                            <div class="w-12 h-12 shrink-0 rounded-2xl bg-white dark:bg-white/5 flex items-center justify-center border border-gray-100 dark:border-white/10">
+                                                <x-brand.mark class="w-8 h-8 text-primary-600 dark:text-primary-400 [--mark-accent:var(--color-secondary-500)]"/>
                                             </div>
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 text-gray-300 group-hover:text-brown-500 transition-all transform group-hover:-translate-x-1">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"></path>
-                                            </svg>
-                                        </div>
-
-                                        <div class="w-full h-[1px] bg-gradient-to-r from-transparent via-gray-200 dark:via-white/5 to-transparent"></div>
-
-                                        <div class="space-y-4">
-                                            <div class="flex items-center gap-4 group">
-                                                <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-50 dark:bg-white/[0.03] text-gray-400 group-hover:bg-brown-50 dark:group-hover:bg-brown-500/10 group-hover:text-brown-600 transition-all duration-300">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"></path>
-                                                    </svg>
-                                                </div>
-                                                <p class="text-[12px] font-bold text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">فاکتور و پیگیری سفارش در حساب کاربری</p>
+                                            <div>
+                                                <p class="text-[14px] font-black text-gray-900 dark:text-white group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">فروشنده: {{ config('brand.name') }}</p>
+                                                <span class="text-[11px] font-bold text-gray-500">درباره فروشگاه</span>
                                             </div>
+                                        </a>
 
-                                            @if($inStock)
-                                                <div class="flex items-center gap-4 group">
-                                                    <div class="w-10 h-10 rounded-xl flex items-center justify-center bg-gray-50 dark:bg-white/[0.03] text-gray-400 group-hover:bg-secondary-50 dark:group-hover:bg-secondary-500/10 group-hover:text-secondary-600 transition-all duration-300">
-                                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
-                                                            <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.129-1.125V11.25c0-4.446-3.61-8.156-8.086-8.156H10.875c-.621 0-1.125.504-1.125 1.125v12.375c0 .621.504 1.125 1.125 1.125h1.125m10.125 0V14.25m-9 0h9"></path>
-                                                        </svg>
-                                                    </div>
-                                                    <div class="flex flex-col">
-                                                        <p class="text-[12px] font-bold text-gray-600 dark:text-gray-400 group-hover:text-gray-900 dark:group-hover:text-white transition-colors">ارسال سریع {{ config('brand.name') }}</p>
-                                                        <p class="text-[10px] text-emerald-600 dark:text-emerald-500/80 font-bold">تحویل سفارش در کوتاه‌ترین زمان</p>
-                                                    </div>
-                                                </div>
-                                            @endif
-                                        </div>
+                                        <ul class="space-y-3 pt-4 border-t border-gray-200 dark:border-white/5 text-[12px] font-bold text-gray-700 dark:text-gray-300">
+                                            <li class="flex items-center gap-3">
+                                                <svg class="w-5 h-5 shrink-0 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M8.25 18.75a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 0 1-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m3 0h1.125c.621 0 1.129-.504 1.129-1.125V11.25c0-4.446-3.61-8.156-8.086-8.156H10.875c-.621 0-1.125.504-1.125 1.125v12.375c0 .621.504 1.125 1.125 1.125h1.125m10.125 0V14.25m-9 0h9"/></svg>
+                                                انتخاب بازه‌ی زمانی ارسال هنگام تسویه‌حساب
+                                            </li>
+                                            <li class="flex items-center gap-3">
+                                                <svg class="w-5 h-5 shrink-0 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75m-3-7.036A11.959 11.959 0 0 1 3.598 6 11.99 11.99 0 0 0 3 9.749c0 5.592 3.824 10.29 9 11.623 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.571-.598-3.751h-.152c-3.196 0-6.1-1.248-8.25-3.285Z"/></svg>
+                                                فاکتور و پیگیری سفارش در حساب کاربری
+                                            </li>
+                                            <li class="flex items-center gap-3">
+                                                <svg class="w-5 h-5 shrink-0 text-primary-600 dark:text-primary-400" fill="none" viewBox="0 0 24 24" stroke-width="1.6" stroke="currentColor" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M9 15 3 9m0 0 6-6M3 9h12a6 6 0 0 1 0 12h-3"/></svg>
+                                                <span>درخواست مرجوعی از حساب کاربری · <a href="{{ route('page.show', \App\Support\Sections\ReturnPolicy::PAGE_SLUG) }}" class="text-primary-700 dark:text-primary-300 underline underline-offset-4">شرایط مرجوعی</a></span>
+                                            </li>
+                                        </ul>
                                     </div>
 
                                     @if($inStock)
@@ -833,55 +941,56 @@ new class extends Component
                                         <div class="space-y-2 pt-4 border-t border-gray-200 dark:border-white/5">
                                             @if($pricing['has_discount'])
                                                 <div class="flex items-center justify-between">
-                                            <span class="text-[11px] font-bold text-gray-400 line-through tabular-nums">
-                                                {{ number_format($pricing['before_discount']) }}
-                                            </span>
-                                                    <span class="bg-red-500 text-white text-[10px] font-black px-2 py-0.5 rounded-lg tabular-nums">
-                                                {{ $pricing['discount_percent'] }}٪-
-                                            </span>
+                                                    <span class="text-xs font-bold text-gray-500 line-through tabular-nums">
+                                                        {{ number_format($pricing['before_discount']) }}
+                                                    </span>
+                                                    <span class="bg-secondary-600 text-white text-[11px] font-black px-2 py-0.5 rounded-lg tabular-nums">
+                                                        {{ $pricing['discount_percent'] }}٪ تخفیف
+                                                    </span>
                                                 </div>
                                             @endif
 
                                             <div class="flex items-baseline justify-end gap-1.5">
-                                        <span id="product-final-price" class="text-3xl font-black text-gray-900 dark:text-white tabular-nums">
-                                            {{ number_format($pricing['after_discount']) }}
-                                        </span>
-                                                <span class="text-[11px] font-bold text-gray-500">تومان</span>
+                                                <span id="product-final-price" class="text-3xl font-black text-gray-900 dark:text-white tabular-nums">
+                                                    {{ number_format($pricing['after_discount']) }}
+                                                </span>
+                                                <span class="text-xs font-bold text-gray-500">تومان</span>
                                             </div>
                                         </div>
 
-                                        {{-- Add to cart --}}
-                                        <button wire:click="addToCart" id="add-to-cart-btn" class="w-full h-14 bg-brown-600 hover:bg-brown-700 text-white rounded-2xl font-black text-sm transition-all shadow-lg shadow-brown-500/20 flex items-center justify-center gap-3 group/btn relative overflow-hidden active:scale-95">
-                                            <span class="relative z-10">افزودن به سبد خرید</span>
-                                            <svg class="w-5 h-5 relative z-10 group-hover/btn:translate-x-[-4px] transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                                        {{-- Add to cart (نوار چسبان موبایل وقتی این دکمه از دید خارج شود نمایش داده می‌شود) --}}
+                                        <button type="button" wire:click="addToCart" wire:loading.attr="disabled" wire:target="addToCart" id="add-to-cart-btn"
+                                                x-data x-intersect:leave="$dispatch('buy-box-hidden', true)" x-intersect:enter="$dispatch('buy-box-hidden', false)"
+                                                class="w-full h-14 bg-brown-600 hover:bg-brown-700 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-3 disabled:opacity-70">
+                                            <span wire:loading.remove wire:target="addToCart">{{ $sizeChosen ? 'افزودن به سبد خرید' : 'انتخاب سایز و افزودن به سبد' }}</span>
+                                            <span wire:loading wire:target="addToCart">در حال افزودن…</span>
+                                            <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
                                         </button>
 
                                     @else
 
                                         {{-- Out of stock --}}
-                                        <div class="pt-4 border-t border-gray-200 dark:border-white/5 space-y-6">
-                                            <div class="space-y-4 flex flex-col items-center text-center">
-                                                <div class="w-16 h-16 rounded-3xl bg-zinc-100 dark:bg-white/5 flex items-center justify-center text-zinc-400">
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-8 h-8">
+                                        <div class="pt-4 border-t border-gray-200 dark:border-white/5 space-y-5">
+                                            <div class="space-y-3 flex flex-col items-center text-center">
+                                                <div class="w-14 h-14 rounded-2xl bg-gray-100 dark:bg-white/5 flex items-center justify-center text-gray-500">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7" aria-hidden="true">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9 3.75h.008v.008H12v-.008Z"></path>
                                                     </svg>
                                                 </div>
                                                 <div>
-                                                    <h3 class="text-lg font-black text-zinc-800 dark:text-white">این کالا فعلاً موجود نیست</h3>
-                                                    <p class="text-[11px] font-bold text-zinc-500 mt-2 leading-relaxed">
-                                                        می‌توانید با فعال‌سازی اطلاع‌رسانی، به محض موجود شدن کالا با خبر شوید.
-                                                    </p>
+                                                    <h3 class="text-lg font-black text-gray-900 dark:text-white">
+                                                        {{ $inStockVariants->isNotEmpty() ? 'این ترکیب فعلاً موجود نیست' : 'این کالا فعلاً موجود نیست' }}
+                                                    </h3>
+                                                    @if($inStockVariants->isNotEmpty())
+                                                        <p class="text-xs font-bold text-gray-500 mt-2 leading-relaxed">سایز یا رنگ دیگری را از گزینه‌های بالا انتخاب کنید.</p>
+                                                    @endif
                                                 </div>
                                             </div>
 
-                                            <button wire:click="notifyMe" class="w-full h-14 bg-zinc-900 dark:bg-white text-white dark:text-black rounded-2xl font-black text-sm transition-all shadow-lg shadow-zinc-500/10 flex items-center justify-center gap-3 group/btn active:scale-95">
-                                                <span>به من اطلاع بده</span>
-                                                <svg class="w-5 h-5 group-hover/btn:rotate-12 transition-transform" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></svg>
-                                            </button>
                                             @if($product->primaryCategory)
-                                                <a href="{{ route('categories.show', $product->primaryCategory?->slug ?? 'Not Found') }}" class="flex items-center justify-center gap-2 py-2 text-[11px] font-black text-brown-600 hover:gap-3 transition-all">
+                                                <a href="{{ route('categories.show', $product->primaryCategory->slug) }}" class="flex items-center justify-center gap-2 min-h-11 text-xs font-black text-primary-700 dark:text-primary-300 hover:underline underline-offset-4">
                                                     مشاهده کالاهای مشابه
-                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor" class="w-4 h-4" aria-hidden="true">
                                                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5"></path>
                                                     </svg>
                                                 </a>
@@ -893,15 +1002,10 @@ new class extends Component
                                 </div>
 
                                 {{-- Footer note --}}
-                                <div class="flex items-center justify-center gap-2 text-[10px] font-bold text-gray-400 uppercase tracking-widest">
-                                    @if($inStock)
-                                        <svg class="w-4 h-4 text-secondary-500" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
-                                        موجود در انبار
-                                    @else
-                                        <svg class="w-4 h-4 text-zinc-400" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
-                                        توقف تولید یا عدم موجودی در انبار
-                                    @endif
-                                </div>
+                                <p class="flex items-center justify-center gap-2 text-[11px] font-bold {{ $inStock ? 'text-emerald-700 dark:text-emerald-400' : 'text-gray-500' }}">
+                                    <span class="w-2 h-2 rounded-full {{ $inStock ? 'bg-emerald-500' : 'bg-gray-400' }}" aria-hidden="true"></span>
+                                    {{ $inStock ? 'موجود در انبار' : 'ناموجود' }}
+                                </p>
                             </div>
 
                         </div>
@@ -909,12 +1013,76 @@ new class extends Component
                 </div>
             </div>
         </section>
+
+        {{-- نوار چسبان خرید در موبایل: بالای نوار ناوبری پایین، فقط وقتی دکمه‌ی اصلی دیده نمی‌شود --}}
+        @if($inStock)
+            <div x-data="{ show: false }" x-on:buy-box-hidden.window="show = $event.detail"
+                 x-show="show" x-transition.opacity x-cloak
+                 class="fixed inset-x-3 bottom-28 z-40 md:hidden">
+                <div class="flex items-center gap-3 rounded-2xl border border-gray-200 dark:border-white/10 bg-white dark:bg-gray-900 p-2 ps-4 shadow-[var(--shadow-lift)]">
+                    <div class="min-w-0 flex-1 leading-tight">
+                        @if($pricing['has_discount'])
+                            <span class="block text-[11px] font-bold text-gray-500 line-through tabular-nums">{{ number_format($pricing['before_discount']) }}</span>
+                        @endif
+                        <span class="text-base font-black text-gray-900 dark:text-white tabular-nums">{{ number_format($pricing['after_discount']) }}</span>
+                        <span class="text-[11px] font-bold text-gray-500">تومان</span>
+                    </div>
+                    <button type="button" wire:click="addToCart" wire:loading.attr="disabled" wire:target="addToCart"
+                            class="h-12 px-5 shrink-0 bg-brown-600 text-white rounded-xl font-black text-sm disabled:opacity-70">
+                        {{ $sizeChosen ? 'افزودن به سبد' : 'انتخاب سایز' }}
+                    </button>
+                </div>
+            </div>
+        @endif
+
+        {{-- راهنمای انتخاب سایز: فقط روش اندازه‌گیری (دانش عمومی) و جدول ثبت‌شده توسط مدیر؛ هیچ عدد تبدیل سایزی ساخته نشده است --}}
+        @if($sizeOptionId)
+            <div x-data="{ open: false }" x-on:open-size-guide.window="open = true" x-on:keydown.escape.window="open = false"
+                 x-show="open" x-cloak class="fixed inset-0 z-[1200] flex items-end md:items-center justify-center p-0 md:p-6"
+                 role="dialog" aria-modal="true" aria-labelledby="size-guide-title">
+                <div class="absolute inset-0 bg-black/50" x-on:click="open = false" x-show="open" x-transition.opacity></div>
+                <div x-show="open" x-transition x-trap.noscroll="open"
+                     class="relative w-full md:max-w-lg max-h-[85vh] overflow-y-auto rounded-t-3xl md:rounded-3xl bg-white dark:bg-gray-900 p-6 space-y-5">
+                    <div class="flex items-center justify-between gap-4">
+                        <h2 id="size-guide-title" class="text-lg font-black text-gray-900 dark:text-white">راهنمای انتخاب سایز</h2>
+                        <button type="button" x-on:click="open = false" aria-label="بستن راهنمای سایز"
+                                class="w-11 h-11 flex items-center justify-center rounded-xl text-gray-500 hover:bg-gray-100 dark:hover:bg-white/5">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24" aria-hidden="true"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                        </button>
+                    </div>
+
+                    <div class="space-y-3">
+                        <h3 class="text-sm font-black text-gray-900 dark:text-white">اندازه‌گیری طول پا</h3>
+                        <ol class="list-decimal ps-5 space-y-2 text-sm leading-7 text-gray-700 dark:text-gray-300">
+                            <li>یک برگه کاغذ را روی زمین و کنار دیوار بگذارید.</li>
+                            <li>با جوراب ورزشی، پاشنه را به دیوار بچسبانید و صاف بایستید.</li>
+                            <li>بلندترین نقطه‌ی انگشتان را روی کاغذ علامت بزنید و فاصله تا دیوار را به سانتی‌متر اندازه بگیرید.</li>
+                            <li>هر دو پا را اندازه بگیرید و عدد بزرگ‌تر را مبنا قرار دهید.</li>
+                        </ol>
+                    </div>
+
+                    <div class="rounded-2xl border border-gray-200 dark:border-white/10 p-4 space-y-3">
+                        <h3 class="text-sm font-black text-gray-900 dark:text-white">جدول سایز</h3>
+                        @if($sizeGuidePage)
+                            <p class="text-sm leading-7 text-gray-700 dark:text-gray-300">جدول تبدیل سایز (EU / US / UK / سانتی‌متر) در صفحه‌ی راهنمای سایز آمده است.</p>
+                            <a href="{{ route('page.show', 'size-guide') }}" class="inline-flex items-center justify-center min-h-11 px-5 rounded-xl bg-primary-600 text-white text-sm font-black">مشاهده جدول سایز</a>
+                        @else
+                            {{-- TODO(OWNER): صفحه‌ای با slug «size-guide» در پنل > صفحات بسازید و جدول سایز تأییدشده را در آن قرار دهید --}}
+                            <p class="text-sm leading-7 text-gray-700 dark:text-gray-300">
+                                جدول تبدیل سایز این فروشگاه هنوز منتشر نشده است. اندازه‌ی سایزها بین برندها متفاوت است؛ اگر درباره‌ی سایز این محصول سؤال دارید، در بخش پرسش و پاسخ بپرسید.
+                            </p>
+                            <a href="#product-tabs" x-on:click="open = false" wire:click="$set('activeTab', 'faq')" class="inline-flex items-center min-h-11 text-sm font-black text-primary-700 dark:text-primary-300 underline underline-offset-4">پرسیدن سؤال درباره‌ی سایز</a>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        @endif
         <!-- END CONTENT -->
 
         <!-- START SECTION SELLER -->
 
         <!-- START SECTION DETAIL -->
-        <section>
+        <section id="product-tabs" class="scroll-mt-28">
             <div class="">
                 <div class="bg-white/40 dark:bg-zinc-900/40 backdrop-blur-md border border-white/40 dark:border-white/10 rounded-[3rem] shadow-lg shadow-gray-200/30 dark:shadow-none">
 
@@ -1086,7 +1254,7 @@ new class extends Component
                                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                                     <div class="lg:col-span-7 space-y-6 order-2 lg:order-1">
                                         <div class="flex items-center gap-3">
-                                            <span class="w-2 h-8 bg-brown-600 rounded-full shadow-[0_0_15px_rgba(43,99,61,0.6)]"></span>
+                                            <span class="w-2 h-8 bg-brown-600 rounded-full shadow-[0_0_15px_rgba(0,115,117,0.6)]"></span>
                                             <h3 class="text-2xl font-black text-zinc-900 dark:text-white">{{$product->title}}</h3>
                                         </div>
                                         <p class="text-sm font-medium text-zinc-600 dark:text-zinc-300 leading-9 text-justify">
@@ -1142,7 +1310,7 @@ new class extends Component
                                 <div class="grid grid-cols-1 lg:grid-cols-12 gap-12 items-center">
                                     <div class="lg:col-span-7 space-y-6">
                                         <div class="flex items-center gap-3">
-                                            <span class="w-12 h-1.5 bg-brown-600 rounded-full shadow-[0_0_15px_rgba(43,99,61,0.4)]"></span>
+                                            <span class="w-12 h-1.5 bg-brown-600 rounded-full shadow-[0_0_15px_rgba(0,115,117,0.4)]"></span>
                                             <h3 class="text-2xl font-black text-zinc-900 dark:text-white">{{$product->title}}</h3>
                                         </div>
                                         <div class="
@@ -1391,7 +1559,7 @@ new class extends Component
                    font-black
                    rounded-2xl
                    hover:bg-brown-500
-                   shadow-[0_15px_30px_-10px_rgba(43,99,61,0.5)]
+                   shadow-[0_15px_30px_-10px_rgba(0,115,117,0.5)]
                    transition-all
                    active:scale-95
                    relative
@@ -1607,7 +1775,7 @@ new class extends Component
 
                                         <div class="flex items-center gap-4 mb-12">
 
-                                            <span class="w-2.5 h-8 bg-brown-600 rounded-full shadow-[0_0_15px_rgba(43,99,61,0.4)]"></span>
+                                            <span class="w-2.5 h-8 bg-brown-600 rounded-full shadow-[0_0_15px_rgba(0,115,117,0.4)]"></span>
 
                                             <h3 class="text-[16px] font-black text-zinc-900 dark:text-white uppercase tracking-tighter">
                                                 ثبت تجربه و دیدگاه جدید
@@ -1877,7 +2045,7 @@ new class extends Component
            text-[14px]
            uppercase
            tracking-[0.3em]
-           shadow-[0_20px_40px_rgba(43,99,61,0.25)]
+           shadow-[0_20px_40px_rgba(0,115,117,0.25)]
            hover:bg-brown-700
            dark:hover:bg-brown-500
            transition-all
@@ -2135,8 +2303,8 @@ new class extends Component
                                 </svg>
                             </div>
                         </div>
-                        <h3 class="text-sm font-black text-gray-900 dark:text-white mb-2 transition-colors group-hover:text-brown-600 dark:group-hover:text-brown-400">ارسال فوق سریع</h3>
-                        <p class="text-[11px] text-gray-500 dark:text-gray-400 leading-6 max-w-[150px]">تحویل کالا در کمتر از ۲۴ ساعت در سراسر کشور</p>
+                        <h3 class="text-sm font-black text-gray-900 dark:text-white mb-2 transition-colors group-hover:text-brown-600 dark:group-hover:text-brown-400">انتخاب زمان ارسال</h3>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400 leading-6 max-w-[150px]">بازه‌ی ارسال را هنگام تسویه‌حساب انتخاب کنید</p>
                     </div>
 
                     <div class="flex flex-col items-center text-center group">

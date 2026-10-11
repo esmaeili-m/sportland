@@ -793,7 +793,7 @@ new class extends Component
                                shadow-[0_20px_50px_rgba(0,0,0,0.02)]
                                transition-all duration-700
                                group-hover:border-brown-500/50
-                               dark:group-hover:shadow-[0_0_60px_rgba(43,99,61,0.12)]"
+                               dark:group-hover:shadow-[0_0_60px_rgba(0,115,117,0.12)]"
                                     ></div>
 
 
@@ -848,7 +848,7 @@ new class extends Component
                                                         class="relative z-10 w-full h-44 object-contain
                                            transition-all duration-700
                                            group-hover:scale-110
-                                           group-hover:drop-shadow-[0_15px_35px_rgba(43,99,61,0.3)]"
+                                           group-hover:drop-shadow-[0_15px_35px_rgba(0,115,117,0.3)]"
                                                         alt="{{ $product->title }}"
                                                     >
                                                 </a>

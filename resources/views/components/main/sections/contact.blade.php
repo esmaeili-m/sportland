@@ -225,7 +225,7 @@ new class extends Component
     <section class="container w-full my-20" dir="rtl">
         <div class="flex flex-col md:flex-row md:items-end justify-between gap-6 px-6 mb-12">
             <div class="flex items-center gap-4">
-                <div class="w-2 h-12 bg-brown-600 rounded-full shadow-[0_0_20px_rgba(43,99,61,0.6)]"></div>
+                <div class="w-2 h-12 bg-brown-600 rounded-full shadow-[0_0_20px_rgba(0,115,117,0.6)]"></div>
                 <div>
                     <h1 class="text-4xl font-black text-gray-900 dark:text-white tracking-tight">{{$data['title'] ?? 'تماس با ' . config('brand.name')}}</h1>
                     

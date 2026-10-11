@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "sportland-vite",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": ["vite", "--port", "5174", "--strictPort"],
+      "port": 5174
+    },
+    {
+      "name": "sportland-web",
+      "runtimeExecutable": "php",
+      "runtimeArgs": ["artisan", "serve", "--port=8010"],
+      "port": 8010
+    }
+  ]
+}

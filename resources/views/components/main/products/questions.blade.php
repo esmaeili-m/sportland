@@ -217,7 +217,7 @@ new class extends Component
                         type="submit"
                         wire:loading.attr="disabled"
                         wire:target="submitQuestion"
-                        class="relative overflow-hidden group w-full md:w-auto px-12 py-5 bg-brown-600 text-white rounded-[2rem] font-black text-[14px] shadow-[0_20px_40px_rgba(43,99,61,0.25)] hover:bg-brown-700 dark:hover:bg-brown-500 transition-all duration-500 active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50">
+                        class="relative overflow-hidden group w-full md:w-auto px-12 py-5 bg-brown-600 text-white rounded-[2rem] font-black text-[14px] shadow-[0_20px_40px_rgba(0,115,117,0.25)] hover:bg-brown-700 dark:hover:bg-brown-500 transition-all duration-500 active:scale-95 flex items-center justify-center gap-3 disabled:opacity-50">
 
                         <div class="absolute inset-0 bg-gradient-to-tr from-brown-400/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
 
@@ -363,7 +363,7 @@ new class extends Component
                 wire:click="loadMore"
                 wire:loading.attr="disabled"
                 wire:target="loadMore"
-                class="group relative px-14 py-5 bg-brown-600 rounded-[2rem] overflow-hidden transition-all duration-500 shadow-[0_20px_40px_rgba(43,99,61,0.25)] hover:scale-[1.03] active:scale-95 disabled:opacity-50">
+                class="group relative px-14 py-5 bg-brown-600 rounded-[2rem] overflow-hidden transition-all duration-500 shadow-[0_20px_40px_rgba(0,115,117,0.25)] hover:scale-[1.03] active:scale-95 disabled:opacity-50">
 
                 <div class="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-full group-hover:animate-shine"></div>
 

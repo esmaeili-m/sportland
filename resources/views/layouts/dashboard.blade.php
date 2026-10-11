@@ -5,9 +5,9 @@
     <meta charset="utf-8"/>
     <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
     <meta content="IE=edge" http-equiv="X-UA-Compatible"/>
-    <meta content="پنل مدیریت {{env('APP_NAME','استارت وب وان')}}" name="Description"/>
-    <meta content="پنل مدیریت {{env('APP_NAME','استارت وب وان')}}" name="Author"/>
-    <meta content="پنل مدیریت {{env('APP_NAME','استارت وب وان')}}" name="keywords"/>
+    <meta content="پنل مدیریت {{ config('brand.title') }}" name="Description"/>
+    <meta content="پنل مدیریت {{ config('brand.title') }}" name="Author"/>
+    <meta content="پنل مدیریت {{ config('brand.title') }}" name="keywords"/>
     <!-- Title -->
     <title>
         @yield('title', 'پنل مدیریت ' . config('brand.name'))
@@ -44,6 +44,11 @@
     @stack('styles')
     <!-- End::Styles -->
     <style>
+        /* رنگ اصلی پنل = فیروزه‌ای اسپرت لند (primary-500، متن سفید 4.8:1). انتخاب رنگ در تنظیمات قالب پنل همچنان بر این مقدار غلبه می‌کند */
+        :root {
+            --primary-rgb: 0, 128, 130;
+        }
+
         .my-swal-popup {
             font-family: inherit !important;
             border-radius: 12px !important;
@@ -628,13 +633,13 @@
                                 $logo=\App\Models\Setting::where('key','logo')->with('media')->first();
                             @endphp
 
-                            <img alt="لوگو" class="desktop-logo"
+                            <img alt="{{ config('brand.name') }}" class="desktop-logo"
                                  src="{{ asset('main/images/brand/logo-horizontal.svg') }}"/>
-                            <img alt="لوگو" class="toggle-logo"
+                            <img alt="{{ config('brand.name') }}" class="toggle-logo"
                                  src="{{ asset('main/images/brand/mark.svg') }}"/>
-                            <img alt="لوگو" class="desktop-dark"
+                            <img alt="{{ config('brand.name') }}" class="desktop-dark"
                                  src="{{ asset('main/images/brand/logo-horizontal-white.svg') }}"/>
-                            <img alt="لوگو" class="toggle-dark"
+                            <img alt="{{ config('brand.name') }}" class="toggle-dark"
                                  src="{{ asset('main/images/brand/mark-white.svg') }}"/>
                         </a>
                     </div>
@@ -732,10 +737,10 @@
         <div class="main-sidebar-header">
             <a class="header-logo" href="/">
 
-                <img alt="لوگو" width="80px" height="100px" style="height: 50px !important; width: 60px !important;" class="desktop-logo" src="{{ asset('main/images/brand/mark.svg') }}"/>
-                <img alt="لوگو" width="80px" height="100px" style="height: 50px !important; width: 60px !important;" class="toggle-dark" src="{{ asset('main/images/brand/mark-white.svg') }}"/>
-                <img alt="لوگو" width="80px" height="100px" style="height: 50px !important; width: 60px !important;" class="desktop-dark" src="{{ asset('main/images/brand/mark-white.svg') }}"/>
-                <img alt="لوگو" width="80px" height="100px" style="height: 50px !important; width: 60px !important;" class="toggle-logo" src="{{ asset('main/images/brand/mark.svg') }}"/>
+                <img alt="{{ config('brand.name') }}" width="80px" height="100px" style="height: 50px !important; width: 60px !important;" class="desktop-logo" src="{{ asset('main/images/brand/mark.svg') }}"/>
+                <img alt="{{ config('brand.name') }}" width="80px" height="100px" style="height: 50px !important; width: 60px !important;" class="toggle-dark" src="{{ asset('main/images/brand/mark-white.svg') }}"/>
+                <img alt="{{ config('brand.name') }}" width="80px" height="100px" style="height: 50px !important; width: 60px !important;" class="desktop-dark" src="{{ asset('main/images/brand/mark-white.svg') }}"/>
+                <img alt="{{ config('brand.name') }}" width="80px" height="100px" style="height: 50px !important; width: 60px !important;" class="toggle-logo" src="{{ asset('main/images/brand/mark.svg') }}"/>
             </a>
         </div>
         <!-- End::main-sidebar-header -->

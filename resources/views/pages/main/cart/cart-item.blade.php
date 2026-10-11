@@ -641,7 +641,7 @@ new class extends Component
                     $productName = $variant?->product?->title
                         ?? Product::query()->find($item['cart_item']->product_id)?->title
                         ?? 'محصول';
-                    $variantName = $variant ? ($variant->name ?? $variant->title ?? null) : null;
+                    $variantName = $variant ? ($variant->label ?: null) : null;
 
                     $order->items()->create([
                         'variant_id'   => $variant?->id,
@@ -772,7 +772,7 @@ new class extends Component
 
                             <div class="flex items-center gap-4">
 
-                                <div class="w-2 h-10 bg-brown-600 rounded-full shadow-[0_0_15px_rgba(43,99,61,0.5)]"></div>
+                                <div class="w-2 h-10 bg-brown-600 rounded-full shadow-[0_0_15px_rgba(0,115,117,0.5)]"></div>
 
                                 <h1 class="text-3xl font-black text-gray-900 dark:text-white">
                                     سبد خرید شما
@@ -882,8 +882,8 @@ new class extends Component
 
                                                     @if($item->variant)
 
-                                                        <p class="text-[10px] font-bold text-gray-400 mt-1">
-                                                            {{ $item->variant->title ?? '' }}
+                                                        <p class="text-xs font-bold text-gray-600 dark:text-gray-400 mt-1">
+                                                            {{ $item->variant->label }}
                                                         </p>
 
                                                     @endif
@@ -1435,8 +1435,8 @@ new class extends Component
                            rounded-[2.2rem]
                            overflow-hidden
                            transition-all duration-500
-                           shadow-[0_20px_40px_-10px_rgba(43,99,61,0.5)]
-                           hover:shadow-[0_25px_50px_-12px_rgba(43,99,61,0.7)]
+                           shadow-[0_20px_40px_-10px_rgba(0,115,117,0.5)]
+                           hover:shadow-[0_25px_50px_-12px_rgba(0,115,117,0.7)]
                            hover:-translate-y-1
                            active:scale-95
                            disabled:opacity-60"
@@ -1553,11 +1553,11 @@ new class extends Component
                         </div>
 
                         <h3 class="text-sm font-black text-gray-900 dark:text-white mb-2">
-                            ارسال فوق سریع
+                            انتخاب زمان ارسال
                         </h3>
 
                         <p class="text-[11px] text-gray-500 dark:text-gray-400 leading-6 max-w-[150px]">
-                            تحویل کالا در کمتر از ۲۴ ساعت در سراسر کشور
+                            بازه‌ی ارسال را هنگام تسویه‌حساب انتخاب کنید
                         </p>
 
                     </div>

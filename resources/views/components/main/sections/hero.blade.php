@@ -131,13 +131,9 @@ new class extends Component
         @keyframes slKenBurns { from { transform: scale(1.04) translate3d(0,0,0); } to { transform: scale(1.14) translate3d(-1.5%, -1%, 0); } }
 
         /* ---------- متن گرادیان متحرک ---------- */
-        #{{ $uid }} .sl-hero-gradient {
-            background: linear-gradient(110deg, var(--color-brown-600, #8b5a2b) 0%, var(--color-brown-400, #c08a5b) 35%, #d4a464 55%, var(--color-brown-600, #8b5a2b) 100%);
-            background-size: 220% 100%;
-            -webkit-background-clip: text; background-clip: text; color: transparent;
-            animation: slShine 6s linear infinite;
-        }
-        @keyframes slShine { to { background-position: -220% 0; } }
+        /* بخش برجسته‌ی عنوان: رنگ توپر برند (بدون متن گرادیانی) */
+        #{{ $uid }} .sl-hero-gradient { color: var(--color-primary-600); }
+        .dark #{{ $uid }} .sl-hero-gradient, #{{ $uid }}.sl-hero-overlay-h .sl-hero-gradient { color: var(--color-primary-300); }
 
         /* ---------- لکه‌های رنگی شناور ---------- */
         #{{ $uid }} .sl-hero-blob { position: absolute; border-radius: 9999px; filter: blur(60px); opacity: .45; pointer-events: none; animation: slFloat 14s ease-in-out infinite; }
@@ -221,13 +217,13 @@ new class extends Component
             {{-- لایه تیره برای خوانایی متن --}}
             <div class="absolute inset-0 -z-10" style="background: linear-gradient(to top, rgba(0,0,0,{{ min(0.95, $overlay + 0.25) }}) 0%, rgba(0,0,0,{{ $overlay }}) 45%, rgba(0,0,0,{{ max(0, $overlay - 0.2) }}) 100%);"></div>
             <div class="sl-hero-blob b1 -z-10 w-72 h-72 bg-brown-500 -top-16 -right-10"></div>
-            <div class="sl-hero-blob b2 -z-10 w-80 h-80 bg-amber-500 bottom-0 -left-20 opacity-30"></div>
+            <div class="sl-hero-blob b2 -z-10 w-80 h-80 bg-primary-400 bottom-0 -left-20 opacity-20"></div>
 
             <div class="relative w-full px-5 md:px-12 lg:px-20 py-12 md:py-20">
                 <div class="max-w-2xl text-white">
                     @if(filled($data['eyebrow'] ?? null))
                         <div data-reveal style="--d: 80ms" class="inline-flex items-center gap-2 px-4 py-1.5 mb-5 rounded-full bg-white/10 border border-white/20 backdrop-blur-md text-[11px] md:text-xs font-black">
-                            <span class="relative flex w-2 h-2"><span class="absolute inline-flex w-full h-full rounded-full bg-amber-300 opacity-75 animate-ping"></span><span class="relative inline-flex w-2 h-2 rounded-full bg-amber-300"></span></span>
+                            <span class="relative flex w-2 h-2"><span class="absolute inline-flex w-full h-full rounded-full bg-secondary-400 opacity-75 animate-ping"></span><span class="relative inline-flex w-2 h-2 rounded-full bg-amber-300"></span></span>
                             {{ $data['eyebrow'] }}
                         </div>
                     @endif
@@ -271,7 +267,7 @@ new class extends Component
                  class="relative isolate overflow-hidden rounded-[1.75rem] md:rounded-[2.5rem] bg-white/60 dark:bg-white/[0.03] border border-white/70 dark:border-white/10 backdrop-blur-md {{ $animate ? '' : 'no-anim' }}">
 
             <div class="sl-hero-blob b1 -z-10 w-72 h-72 bg-brown-400/60 -top-24 -right-16"></div>
-            <div class="sl-hero-blob b2 -z-10 w-96 h-96 bg-amber-300/40 top-1/3 -left-32"></div>
+            <div class="sl-hero-blob b2 -z-10 w-96 h-96 bg-primary-300/30 top-1/3 -left-32"></div>
             <div class="sl-hero-blob b3 -z-10 w-64 h-64 bg-brown-300/40 -bottom-24 right-1/3"></div>
             {{-- بافت نقطه‌ای ظریف --}}
             <div class="absolute inset-0 -z-10 opacity-[0.07] dark:opacity-[0.12]" style="background-image: radial-gradient(currentColor 1px, transparent 1px); background-size: 22px 22px;"></div>

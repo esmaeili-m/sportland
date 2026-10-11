@@ -185,8 +185,8 @@ new class extends Component
                                 </svg>
                             </div>
                         </div>
-                        <h3 class="text-sm font-black text-gray-900 dark:text-white mb-2 transition-colors group-hover:text-brown-600 dark:group-hover:text-brown-400">ارسال فوق سریع</h3>
-                        <p class="text-[11px] text-gray-500 dark:text-gray-400 leading-6 max-w-[150px]">تحویل کالا در کمتر از ۲۴ ساعت در سراسر کشور</p>
+                        <h3 class="text-sm font-black text-gray-900 dark:text-white mb-2 transition-colors group-hover:text-brown-600 dark:group-hover:text-brown-400">انتخاب زمان ارسال</h3>
+                        <p class="text-[11px] text-gray-500 dark:text-gray-400 leading-6 max-w-[150px]">بازه‌ی ارسال را هنگام تسویه‌حساب انتخاب کنید</p>
                     </div>
 
                     <div class="flex flex-col items-center text-center group">
