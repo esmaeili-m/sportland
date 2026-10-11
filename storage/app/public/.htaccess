@@ -1,0 +1,7 @@
+# Block running script files inside the uploads folder (/storage).
+# Uses only mod_rewrite, which Laravel's own public/.htaccess already needs,
+# so it works wherever the site itself works.
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteRule \.(php[0-9]?|phtml|pht|phar|phps|cgi|pl|py|sh)$ - [F,NC,L]
+</IfModule>
