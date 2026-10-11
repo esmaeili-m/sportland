@@ -875,32 +875,25 @@ new class extends Component
                                 </div>
 
                                 {{-- Specifications --}}
+                                @if($product->specifications->isNotEmpty())
                                 <div class="space-y-4">
                                     <p class="text-[13px] font-black text-gray-900 dark:text-white">ویژگی‌های اصلی کالا:</p>
 
                                     <div class="grid grid-cols-2 gap-3">
                                         @foreach($product->specifications as $specification)
                                             <div class="bg-gray-50 dark:bg-white/5 border border-gray-100 dark:border-white/5 p-3 rounded-2xl flex flex-col gap-2 transition-all hover:border-brown-500/30 group">
-                                        <span class="text-[10px] text-gray-500 dark:text-gray-400 font-medium">
+                                        <span class="text-[11px] text-gray-600 dark:text-gray-400 font-medium">
                                             {{ $specification->title }}
                                         </span>
-                                                <span class="text-[11px] font-black text-gray-900 dark:text-white group-hover:text-brown-600 transition-colors">
+                                                <span class="text-xs font-black text-gray-900 dark:text-white">
                                             {{ $specification->value }}
                                         </span>
                                             </div>
                                         @endforeach
                                     </div>
                                 </div>
+                                @endif
 
-                                {{-- Return policy --}}
-                                <div class="p-4 bg-brown-50 dark:bg-brown-600/5 border border-brown-100 dark:border-brown-600/20 rounded-2xl flex gap-4">
-                                    <i class="fas fa-info-circle text-brown-600 mt-1"></i>
-                                    <p class="text-xs font-bold text-brown-800 dark:text-brown-400 leading-relaxed">
-                                        شرایط ثبت درخواست مرجوعی در صفحه‌ی
-                                        <a href="{{ route('page.show', \App\Support\Sections\ReturnPolicy::PAGE_SLUG) }}" class="underline underline-offset-4">شرایط مرجوعی</a>
-                                        آمده است.
-                                    </p>
-                                </div>
                             </div>
 
                             {{-- ---------- Meta / buy box ---------- --}}

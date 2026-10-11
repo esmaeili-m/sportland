@@ -21,7 +21,7 @@ class UserTableSeeder extends Seeder
         $admin = User::create([
             'first_name' => 'مهدی',
             'last_name' => 'اسماعیلی',
-            'email' => 'admin@brenjkhatir.test', // TODO(OWNER): ایمیل واقعی مدیر
+            'email' => 'admin@sportland.test', // TODO(OWNER): ایمیل واقعی مدیر
             'mobile' => '09193544391',
             'password' => Hash::make('password123'),
         ]);

@@ -1,4 +1,7 @@
-# zaracharm — Project Memory
+# Sport Land (اسپرت لند) — Project Memory
+
+Sport-goods shop (shoes, sportswear, training gear). Codebase forked from zaracharm → «برنج خطیر» → rebranded to «اسپرت لند | Sport Land» (Oct 2026). Brand name/title live in `config/brand.php`; design tokens + rules in `DESIGN.md`; product context in `PRODUCT.md`; latest rebrand report in `REBRAND_REPORT.md`.
+⚠ `.env` DB is SHARED with `../zaracharm` and `../brenjkhatir` — never write data (seed/migrate/tinker writes/test purchases) from this project until the DB is separated.
 
 Persian (RTL, `APP_LOCALE=fa`) e-commerce shop + page-builder CMS. Mobile/OTP auth, product variants & multi-warehouse inventory, discounts/campaigns/coupons, cart → order → invoice → payment (wallet / card-to-card / gateways). Legacy LMS/services/hospitals/team modules were removed (Oct 2026); blog remains.
 
@@ -53,8 +56,9 @@ Persian (RTL, `APP_LOCALE=fa`) e-commerce shop + page-builder CMS. Mobile/OTP au
 - Comments in code are often Persian; UI text is Persian, RTL.
 
 ## Frontend
-- Theme tokens in `resources/css/app.css` `@theme`: `primary-*`, `secondary-*`, `brown-*` (storefront accent), `custom-light/dark`; font `payda`. Dark mode = `.dark` class variant.
+- Theme tokens in `resources/css/app.css` `@theme`: `primary-*` (turquoise), `secondary-*` (coral, sale/urgency only), `brown-*` (legacy alias = primary), `custom-light/dark`; font `payda`. Dark mode = `.dark` class variant.
 - Dynamic Tailwind classes from DB must be within the `@source inline(...)` safelist (col-span 1–12, gap 0–12, pt/pb 0–20). Extend the safelist if adding new dynamic utilities.
+- Flat surface/button system at the end of `app.css` auto-styles rounded light cards and brand-coloured buttons (opt out with `.no-flat`). Page SEO: page components call `view()->share('seo', [...])` in mount; `layouts/main` builds title/OG/canonical from it; JSON-LD via `@push('structured-data')`.
 - Dashboard layout is a third-party admin template (assets in `public/dashboard/`); storefront uses Tailwind + Swiper.
 
 ## Commands

@@ -5,7 +5,6 @@ namespace Database\Seeders;
 use App\Models\Category;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Str;
 
 class CategorySeeder extends Seeder
 {
@@ -14,11 +13,32 @@ class CategorySeeder extends Seeder
         DB::statement('SET FOREIGN_KEY_CHECKS=0;');
 
         Category::truncate();
-        // دسته‌های پایه «برنج خطیر» (فقط برای محیط توسعه).
-        // TODO(OWNER): دسته‌بندی‌ها را با ارقام و بسته‌بندی‌های واقعی محصولات (مثلاً نام رقم برنج) جایگزین کنید.
+        // ساختار پیشنهادی دسته‌های «اسپرت لند» (فقط برای محیط توسعه یا دیتابیس جدید و خالی).
+        // ⚠ این سیدر جدول categories را TRUNCATE می‌کند؛ روی دیتابیس دارای داده‌ی واقعی اجرا نشود.
+        // TODO(OWNER): پیش از انتشار، دسته‌ها را با کالاهای واقعی فروشگاه تطبیق دهید.
         $categories = [
-            'برنج' => [
-                'برنج ایرانی' => [],
+            'کفش ورزشی' => [
+                'کفش دویدن' => [],
+                'کفش فوتبال' => ['کفش استوک', 'کفش فوتسال (سالنی)'],
+                'کفش بسکتبال' => [],
+                'کفش تمرین و بدنسازی' => [],
+                'کفش پیاده‌روی' => [],
+                'کتانی روزمره' => [],
+            ],
+            'پوشاک ورزشی' => [
+                'تیشرت ورزشی' => [],
+                'شلوار ورزشی' => [],
+                'گرمکن' => [],
+                'سویشرت و هودی' => [],
+                'شورت ورزشی' => [],
+                'پوشاک فنی' => [],
+            ],
+            'اکسسوری و تجهیزات' => [
+                'کیف و ساک ورزشی' => [],
+                'جوراب ورزشی' => [],
+                'کلاه' => [],
+                'بطری آب' => [],
+                'تجهیزات تمرینی' => [],
             ],
         ];
 
@@ -30,7 +50,7 @@ class CategorySeeder extends Seeder
             $parent = Category::create([
                 'parent_id' => null,
                 'title' => $parentTitle,
-                'slug' => $this->randomSlug(),
+                'slug' => $this->slug($parentTitle),
 
                 'description' => "دسته‌بندی {$parentTitle}",
                 'short_description' => "انواع {$parentTitle}",
@@ -46,7 +66,7 @@ class CategorySeeder extends Seeder
                 $child = Category::create([
                     'parent_id' => $parent->id,
                     'title' => $childTitle,
-                    'slug' => $this->randomSlug(),
+                    'slug' => $this->slug($childTitle),
 
                     'description' => "انواع {$childTitle}",
                     'short_description' => $childTitle,
@@ -62,7 +82,7 @@ class CategorySeeder extends Seeder
                     Category::create([
                         'parent_id' => $child->id,
                         'title' => $grandChildTitle,
-                        'slug' => $this->randomSlug(),
+                        'slug' => $this->slug($grandChildTitle),
 
                         'description' => "انواع {$grandChildTitle}",
                         'short_description' => $grandChildTitle,
@@ -71,11 +91,14 @@ class CategorySeeder extends Seeder
                     ]);
                 }
             }
-            }
+        }
 
+        DB::statement('SET FOREIGN_KEY_CHECKS=1;');
     }
-    private function randomSlug(): string
+
+    /** اسلاگ فارسی خوانا (الگوی پروژه: فاصله ← خط تیره؛ پرانتز حذف می‌شود) */
+    private function slug(string $title): string
     {
-        return Str::lower(Str::random(12));
+        return trim(preg_replace(['/[()]/u', '/\s+/u'], ['', '-'], $title), '-');
     }
 }

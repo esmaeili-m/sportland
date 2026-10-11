@@ -58,18 +58,18 @@
 
     <div class="col-md-6">
         <label class="form-label">متن کوچک بالای عنوان</label>
-        <input type="text" wire:model="formData.eyebrow" class="form-control @error('formData.eyebrow') is-invalid @enderror" placeholder="مثلاً: برداشت جدید">
+        <input type="text" wire:model="formData.eyebrow" class="form-control @error('formData.eyebrow') is-invalid @enderror" placeholder="مثلاً: کالکشن جدید">
         @error('formData.eyebrow') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
     </div>
     <div class="col-md-6">
         <label class="form-label">بخش برجسته عنوان (رنگی و متحرک)</label>
-        <input type="text" wire:model="formData.highlight" class="form-control @error('formData.highlight') is-invalid @enderror" placeholder="مثلاً: برنج ایرانی">
+        <input type="text" wire:model="formData.highlight" class="form-control @error('formData.highlight') is-invalid @enderror" placeholder="مثلاً: کفش دویدن">
         @error('formData.highlight') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
         <div class="form-text">اگر داخل عنوان باشد همان‌جا رنگی می‌شود، وگرنه خط دوم عنوان است.</div>
     </div>
     <div class="col-12">
         <label class="form-label">عنوان اصلی</label>
-        <input type="text" wire:model="formData.heading" class="form-control @error('formData.heading') is-invalid @enderror" placeholder="مثلاً: برنج ایرانی، سفارش آنلاین">
+        <input type="text" wire:model="formData.heading" class="form-control @error('formData.heading') is-invalid @enderror" placeholder="مثلاً: کفش دویدن، آماده برای رکورد بعدی">
         @error('formData.heading') <div class="invalid-feedback d-block">{{ $message }}</div> @enderror
     </div>
     <div class="col-12">

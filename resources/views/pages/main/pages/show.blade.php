@@ -22,6 +22,7 @@ new class extends Component
             ->firstOrFail();
 
         $this->seo = $this->page->getSeoPayload();
+        view()->share('seo', $this->seo);
         $this->dispatch('seo:update', $this->seo);
     }
 };

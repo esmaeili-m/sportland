@@ -223,7 +223,7 @@ new class extends Component
                                             href="{{ route('products.show', $product->slug) }}"
                                             class="w-full py-3 bg-brown-500 text-white rounded-xl text-[11px] font-black shadow-lg shadow-brown-500/20 hover:bg-brown-700 transition-all flex items-center justify-center gap-2 group/btn"
                                         >
-                                            <span>خرید سریع</span>
+                                            <span>مشاهده و انتخاب سایز</span>
 
                                             <svg
                                                 class="w-4 h-4 transition-transform group-hover/btn:translate-x-[-3px]"

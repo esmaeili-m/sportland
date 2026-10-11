@@ -33,6 +33,9 @@ new class extends Component
 
         $this->q = $this->search()->normalize($this->q);
 
+        // نتایج جستجو ایندکس نمی‌شوند
+        view()->share('seo', ['title' => $this->q !== '' ? 'جستجو: ' . $this->q : 'جستجو', 'no_index' => true]);
+
         if ($this->type !== 'all' && ! $this->search()->isValidType($this->type)) {
             $this->type = 'all';
         }

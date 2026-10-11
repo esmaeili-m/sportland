@@ -9,6 +9,13 @@ new class extends Component
     public function mount($slug)
     {
         $this->article = Article::where('slug', $slug)->withCount('comments')->with('comments')->first();
+        abort_unless($this->article, 404);
+
+        view()->share('seo', [
+            'title' => $this->article->title,
+            'og_type' => 'article',
+            'canonical' => route('articles.show', $this->article->slug),
+        ]);
         $this->last_articles = Article::active()->latest()->take(4)->with(['category'])->get();
         $this->categories = Category::active()->inRandomOrder()->whereNull('parent_id')->take(4)->get();
         $this->tags = \App\Models\Tag::inRandomOrder()->take(10)->get();

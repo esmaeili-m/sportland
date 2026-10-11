@@ -1,65 +1,25 @@
 {
   "schemaVersion": 2,
-  "generatedAt": "2026-10-10T13:00:00Z",
-  "title": "Design System: برنج خطیر",
+  "generatedAt": "2026-10-11T21:00:00Z",
+  "title": "Design System: اسپرت لند | Sport Land",
   "extensions": {
     "colorMeta": {
-      "paddy-500": { "role": "primary", "displayName": "سبز شالیزار", "canonical": "oklch(51% 0.095 152)", "tonalRamp": ["oklch(17% 0.03 152)", "oklch(24% 0.044 152)", "oklch(31% 0.058 152)", "oklch(38% 0.072 152)", "oklch(45% 0.085 152)", "oklch(70% 0.1 152)", "oklch(89% 0.05 152)", "oklch(97.5% 0.014 152)"] },
-      "saffron-500": { "role": "secondary", "displayName": "زعفرانی", "canonical": "oklch(55% 0.15 52)", "tonalRamp": ["oklch(20% 0.05 52)", "oklch(27% 0.07 52)", "oklch(35% 0.095 52)", "oklch(42% 0.115 52)", "oklch(49% 0.135 52)", "oklch(72% 0.14 52)", "oklch(87.5% 0.075 52)", "oklch(97% 0.018 52)"] },
-      "grain-100": { "role": "neutral", "displayName": "دانه برنج", "canonical": "oklch(96.4% 0.008 85)", "tonalRamp": ["oklch(14.5% 0.005 85)", "oklch(21% 0.007 85)", "oklch(27.5% 0.008 85)", "oklch(37.5% 0.01 85)", "oklch(52% 0.012 85)", "oklch(64% 0.012 85)", "oklch(92.2% 0.01 85)", "oklch(98.6% 0.006 85)"] }
+      "primary-600": { "role": "primary", "displayName": "فیروزه‌ای", "canonical": "oklch(50% 0.09 197)", "tonalRamp": ["oklch(21% 0.036 210)", "oklch(29% 0.05 206)", "oklch(36% 0.064 203)", "oklch(43% 0.078 200)", "oklch(50% 0.09 197)", "oklch(54% 0.1 196)", "oklch(74% 0.12 192)", "oklch(82% 0.1 193)", "oklch(89% 0.07 195)", "oklch(97.5% 0.02 195)"] },
+      "secondary-600": { "role": "secondary", "displayName": "نارنجی مرجانی", "canonical": "oklch(54% 0.18 36)", "tonalRamp": ["oklch(22% 0.065 35)", "oklch(30% 0.095 35)", "oklch(38% 0.125 35)", "oklch(46% 0.155 35)", "oklch(54% 0.18 36)", "oklch(57% 0.19 38)", "oklch(74% 0.15 45)", "oklch(87.5% 0.085 45)", "oklch(97% 0.02 45)"] },
+      "gray-100": { "role": "neutral", "displayName": "خنثی سرد", "canonical": "oklch(96.5% 0.005 220)", "tonalRamp": ["oklch(14.5% 0.01 220)", "oklch(20.5% 0.011 220)", "oklch(27.5% 0.012 220)", "oklch(37% 0.013 220)", "oklch(45% 0.014 220)", "oklch(53% 0.014 220)", "oklch(57.5% 0.013 220)", "oklch(87% 0.009 220)", "oklch(92.5% 0.007 220)", "oklch(98.5% 0.003 220)"] }
     },
     "typographyMeta": {
       "display": { "displayName": "Display", "purpose": "عنوان صفحه و بخش" },
-      "body": { "displayName": "Body", "purpose": "متن توضیحی، حداکثر 65ch" }
+      "body": { "displayName": "Body", "purpose": "متن توضیحی، حداکثر 65ch" },
+      "price": { "displayName": "Price", "purpose": "قیمت با ارقام tabular، وزن 900" }
     },
     "shadows": [
-      { "name": "lift-hover", "value": "0 10px 15px -3px rgba(43,99,61,0.2)", "purpose": "سایه‌ی hover دکمه/کارت فعال" }
+      { "name": "card", "value": "var(--shadow-card)", "purpose": "سطح پایه کارت‌ها" },
+      { "name": "lift", "value": "var(--shadow-lift)", "purpose": "hover کارت و دکمه، عناصر شناور (نوار پایین، نوار خرید چسبان)" }
     ],
     "motion": [
-      { "name": "ease-out-expo", "value": "cubic-bezier(0.22, 1, 0.36, 1)", "purpose": "محو شدن لودر و ورود دانه‌ها" }
+      { "name": "snap", "value": "cubic-bezier(0.2, 0.8, 0.2, 1)", "purpose": "transition کوتاه (۱۸۰ms) دکمه‌ها و کارت‌ها؛ با prefers-reduced-motion حذف می‌شود" }
     ],
-    "breakpoints": [
-      { "name": "laptop", "value": "75rem" },
-      { "name": "desktop", "value": "90rem" }
-    ]
-  },
-  "components": [
-    {
-      "name": "Primary Button",
-      "kind": "button",
-      "refersTo": "button-primary",
-      "description": "عمل اصلی صفحه (خرید، ادامه، ثبت).",
-      "html": "<button class=\"ds-btn-primary\">خرید سریع</button>",
-      "css": ".ds-btn-primary{background:var(--color-primary-500,oklch(51% 0.095 152));color:#fff;padding:12px 24px;border:0;border-radius:12px;font-weight:900;font-size:13px;transition:background .2s} .ds-btn-primary:hover{background:var(--color-primary-700,oklch(38% 0.072 152))} .ds-btn-primary:focus-visible{outline:2px solid oklch(51% 0.095 152);outline-offset:2px}"
-    },
-    {
-      "name": "Feature Chip",
-      "kind": "chip",
-      "refersTo": "chip-feature",
-      "description": "قابلیت واقعی فروشگاه (بدون ادعای کیفیت).",
-      "html": "<span class=\"ds-chip\">انتخاب زمان ارسال</span>",
-      "css": ".ds-chip{display:inline-block;background:oklch(97.5% 0.014 152);color:oklch(38% 0.072 152);border:1px solid oklch(94.5% 0.028 152);border-radius:12px;padding:8px 16px;font-size:14px;font-weight:700}"
-    },
-    {
-      "name": "Discount Badge",
-      "kind": "custom",
-      "refersTo": "badge-discount",
-      "description": "درصد تخفیف روی تصویر محصول.",
-      "html": "<span class=\"ds-badge\">۱۵٪-</span>",
-      "css": ".ds-badge{background:oklch(55% 0.15 52);color:#fff;border-radius:8px;padding:4px 10px;font-size:11px;font-weight:900}"
-    }
-  ],
-  "narrative": {
-    "northStar": "سفره‌ی شالیزار (The Paddy Table)",
-    "overview": "فروشگاه برنج یک فروشگاه مواد غذایی خانگی است، نه بوتیک مد. رنگ اصلی از سبز شالیزار می‌آید، زمینه‌ها رنگ گرم دانه برنج و کاغذ دارند و زعفرانی فقط برای لحظه‌های تأکید استفاده می‌شود.",
-    "keyCharacteristics": ["سبز شالیزار به‌عنوان تنها رنگ برند برای عمل اصلی", "خنثی‌های گرم به‌جای خاکستری سرد", "زعفرانی کم‌مصرف و فقط برای تأکید", "نشان خوشه برنج خمیده (موقت)", "فارسی، RTL، اعداد فارسی"],
-    "rules": [
-      { "name": "The Single Source Rule", "body": "رنگ برند فقط از توکن خوانده می‌شود.", "section": "colors" },
-      { "name": "The Saffron Restraint Rule", "body": "زعفرانی فقط برای تخفیف و فوریت است.", "section": "colors" },
-      { "name": "The 11px Floor Rule", "body": "متن کوچک‌تر از 11px ممنوع است.", "section": "typography" },
-      { "name": "The Lift-On-Intent Rule", "body": "سایه پاسخ به تعامل است، نه تزئین دائمی.", "section": "elevation" }
-    ],
-    "dos": ["رنگ را فقط از توکن‌های @theme بخوانید.", "برای نبود لوگوی آپلودشده از x-brand.logo و x-brand.mark استفاده کنید.", "آمار و ادعاها را فقط با داده‌ی واقعی نشان دهید."],
-    "donts": ["ادعای کیفیت، منشأ، سلامت، مجوز یا آمار مشتری بدون داده‌ی واقعی ننویسید.", "نماد اعتماد ساختگی نمایش ندهید.", "متن کوچک‌تر از 11px یا با کنتراست کمتر از 4.5:1 ننویسید.", "متن گرادیانی یا هاله‌ی رنگی بدون offset اضافه نکنید."]
+    "source": "resources/css/app.css (@theme) — DESIGN.md"
   }
 }

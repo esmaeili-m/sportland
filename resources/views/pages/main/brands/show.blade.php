@@ -23,6 +23,11 @@ new class extends Component
             ->where('slug', $slug)
             ->firstOrFail();
 
+        view()->share('seo', [
+            'title' => $this->brand->title,
+            'canonical' => route('brands.show', $this->brand->slug),
+        ]);
+
         // وضعیت علاقه‌مندی کاربر برای محصولات همین برند
         $this->loadWishlistIds(
             $this->brand->activeProducts()->pluck('products.id')

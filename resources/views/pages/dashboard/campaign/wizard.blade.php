@@ -698,7 +698,7 @@ new class extends Component
                 <div class="row g-3">
                     <div class="col-md-8">
                         <label class="form-label">نام کمپین <span class="text-danger">*</span></label>
-                        <input type="text" wire:model.blur="title" class="form-control @error('title') is-invalid @enderror" placeholder="مثلاً: فروش ویژه برنج پاییزه">
+                        <input type="text" wire:model.blur="title" class="form-control @error('title') is-invalid @enderror" placeholder="مثلاً: فروش ویژه کفش دویدن پاییزه">
                         <div class="form-text">در بخش کمپین صفحه اصلی و گزارش‌ها نمایش داده می‌شود.</div>
                         @error('title') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>

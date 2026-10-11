@@ -17,24 +17,32 @@
         'has_discount' => false,
         'discount_percent' => 0,
     ];
+    $inStock = (bool) $product->cheapestVariant?->isInStock();
+    $productUrl = route('products.show', $product->slug);
 @endphp
 <div
-    {{ $attributes->class('group relative bg-white/70 dark:bg-white/[0.03] backdrop-blur-md rounded-[2.5rem] border border-gray-200 dark:border-white/10 p-2 transition-all duration-500 hover:shadow-lg hover:shadow-brown-600/20 hover:-translate-y-2') }}
+    {{ $attributes->class('group relative bg-white dark:bg-white/[0.03] rounded-[1.5rem] border border-gray-200 dark:border-white/10 p-2 transition-shadow duration-200 hover:shadow-[var(--shadow-lift)]') }}
 >
     <div class="flex h-[220px]">
 
         {{-- Product Image --}}
-        <div class="w-2/5 relative rounded-[2rem] overflow-hidden m-1 transition-all duration-500 group-hover:scale-[0.98]">
+        <div class="w-2/5 relative rounded-[1.25rem] overflow-hidden m-1 bg-gray-100 dark:bg-white/5 {{ $inStock ? '' : 'grayscale' }}">
 
-            @if($pictureMode === 'background')
+            @if(! $product->featuredImageUrl)
+
+                {{-- بدون تصویر: نشان برند به‌جای تصویر شکسته --}}
+                <div class="absolute inset-0 flex items-center justify-center">
+                    <x-brand.mark :speed="false" class="w-12 h-12 text-gray-300 dark:text-gray-600"/>
+                </div>
+
+            @elseif($pictureMode === 'background')
 
                 <img
                     src="{{ $product->featuredImageUrl }}"
                     alt="{{ $product->title }}"
-                    class="absolute inset-0 w-full h-full object-cover scale-100 group-hover:scale-110 transition-transform duration-1000 ease-out"
+                    loading="lazy" decoding="async"
+                    class="absolute inset-0 w-full h-full object-cover transition-transform duration-500 ease-out group-hover:scale-105"
                 >
-
-                <div class="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-500"></div>
 
             @else
 
@@ -43,19 +51,24 @@
 
                     <img
                         src="{{ $product->featuredImageUrl }}"
-                        class="w-32 h-32 object-contain drop-shadow-md transition-transform duration-700 group-hover:scale-110 group-hover:-rotate-6"
+                        class="w-32 h-32 object-contain drop-shadow-md transition-transform duration-500 group-hover:scale-105"
                         alt="{{ $product->title }}"
+                        loading="lazy" decoding="async"
                     >
 
                 </div>
 
             @endif
 
-            {{-- Discount --}}
-            @if($prices['has_discount'])
-                <div class="absolute top-3 right-3 bg-red-500 text-white text-[10px] font-black px-2.5 py-1 rounded-lg shadow-lg shadow-red-500/40">
-                    {{ $prices['discount_percent'] }}٪-
-                </div>
+            <a href="{{ $productUrl }}" tabindex="-1" aria-hidden="true" class="absolute inset-0 z-10"></a>
+
+            {{-- نشان‌های وضعیت (فقط بر اساس داده واقعی) --}}
+            @if(! $inStock)
+                <span class="absolute z-20 top-3 right-3 bg-gray-800 text-white text-[11px] font-black px-2.5 py-1 rounded-lg">ناموجود</span>
+            @elseif($prices['has_discount'])
+                <span class="absolute z-20 top-3 right-3 bg-secondary-600 text-white text-[11px] font-black px-2.5 py-1 rounded-lg tabular-nums">
+                    {{ $prices['discount_percent'] }}٪ تخفیف
+                </span>
             @endif
 
             {{-- Wishlist --}}
@@ -74,14 +87,14 @@
 
                 <div class="flex justify-between items-start">
 
-<span class="text-xs font-bold text-brown-600 dark:text-brown-400 mb-1 block">
-{{ $product->brand?->title ?? 'محصول' }}
-</span>
+                    @if($product->brand)
+                        <span class="text-xs font-bold text-primary-700 dark:text-primary-300 mb-1 block">{{ $product->brand->title }}</span>
+                    @endif
 
                 </div>
 
-                <h3 class="font-black text-gray-900 dark:text-white text-base leading-tight mb-2">
-                    {{ $product->title }}
+                <h3 class="font-black text-gray-900 dark:text-white text-base leading-tight mb-2 line-clamp-2">
+                    <a href="{{ $productUrl }}" class="hover:text-primary-700 dark:hover:text-primary-300 transition-colors">{{ $product->title }}</a>
                 </h3>
 
                 <div class="flex flex-wrap gap-1.5 mt-2">
@@ -137,18 +150,18 @@
                 <div class="mb-3 text-left">
 
                     @if($prices['has_discount'])
-                        <p class="text-[10px] text-gray-400 line-through mb-0.5">
+                        <p class="text-[11px] text-gray-500 line-through mb-0.5 tabular-nums">
                             {{ number_format($prices['price'] ?? 0) }}
                         </p>
                     @endif
 
                     <div class="flex items-baseline justify-end gap-1">
 
-<span class="text-xl font-black text-gray-900 dark:text-white tracking-tighter">
+<span class="text-xl font-black text-gray-900 dark:text-white tabular-nums">
 {{ number_format($prices['after_discount'] ?? 0) }}
 </span>
 
-                        <span class="text-[10px] font-bold text-gray-500">
+                        <span class="text-[11px] font-bold text-gray-500">
 تومان
 </span>
 
@@ -157,16 +170,17 @@
                 </div>
 
 
-               <a href="{{ route('products.show', $product->slug) }}"
-                class="w-full py-3 bg-brown-500 text-white rounded-xl text-[11px] font-black shadow-lg shadow-brown-500/20 hover:bg-brown-700 transition-all flex items-center justify-center gap-2 group/btn"
+               <a href="{{ $productUrl }}"
+                class="w-full min-h-11 py-3 bg-brown-500 text-white rounded-xl text-xs font-black flex items-center justify-center gap-2 group/btn"
                 >
-                <span>خرید سریع</span>
+                <span>{{ $inStock ? 'انتخاب سایز و خرید' : 'مشاهده محصول' }}</span>
 
                 <svg
-                    class="w-4 h-4 transition-transform group-hover:translate-x-[-3px]"
+                    class="w-4 h-4 transition-transform group-hover/btn:-translate-x-0.5"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
+                    aria-hidden="true"
                 >
                     <path stroke-width="3" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
                 </svg>

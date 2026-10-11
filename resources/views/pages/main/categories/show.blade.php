@@ -85,6 +85,12 @@ new class extends Component
     {
         $this->category = Category::query()->active()->where('slug', $slug)->firstOrFail();
 
+        view()->share('seo', [
+            'title' => $this->category->title,
+            'description' => \Illuminate\Support\Str::limit(trim(strip_tags((string) ($this->category->short_description ?: $this->category->description))), 160, '…'),
+            'canonical' => route('categories.show', $this->category->slug),
+        ]);
+
         $this->childCategories = $this->category->children()->active()->orderBy('title')->get();
 
         $this->categoryIds = $this->category->getAllDescendantIds()
