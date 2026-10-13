@@ -179,7 +179,7 @@ new #[Layout('layouts::main')] class extends Component
                         @if($logo)
                             <img src="{{ asset('storage/' . $logo) }}" class="w-30" alt="{{ config('brand.name') }}">
                         @else
-                            <x-brand.logo :name="config('brand.name')"/>
+                            <x-brand.logo/>
                         @endif
                     </a>
 

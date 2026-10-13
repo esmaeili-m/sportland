@@ -1,5 +1,5 @@
 ---
-name: اسپرت لند | Sport Land
+name: اسپرت لند خوشدل | Sport Land Khoshdel
 description: فروشگاه اینترنتی کفش، پوشاک و تجهیزات ورزشی؛ فارسی، راست‌به‌چپ، اول موبایل
 colors:
   primary-50: "oklch(97.5% 0.02 195)"
@@ -77,7 +77,7 @@ components:
     textColor: "{colors.white}"
 ---
 
-# Design System: اسپرت لند | Sport Land
+# Design System: اسپرت لند خوشدل | Sport Land Khoshdel
 
 ## Overview
 
@@ -166,7 +166,7 @@ components:
 
 ### Brand assets (لوگوی رسمی مالک)
 - فایل اصلی دریافتی: `public/main/images/brand/logo-original.jpg` (۱۲۸۰×۱۲۸۰) — منبع آیکون‌های 180/192/512، maskable و تصویر OG.
-- بازسازی برداری مونوگرام SL برای اندازه‌های کوچک: `<x-brand.mark>` (S = currentColor، L گرادیان؛ `tile` = کاشی کامل) و `<x-brand.logo>` (مونوگرام + نام فارسی + SPORT LAND با گرادیان لوگو).
+- بازسازی برداری مونوگرام SL برای اندازه‌های کوچک: `<x-brand.mark>` (S = currentColor، L گرادیان؛ `tile` = کاشی کامل) و `<x-brand.logo>` (مونوگرام + «اسپرت لند» / «خوشدل» در دو خط + SPORT LAND KHOSHDEL با گرادیان لوگو؛ از `config('brand.name_lines')`).
 - رنگ‌های لوگو (فقط لوگو/جایگزین): فیروزه‌ای `#35c3e9`، مشکی `#0e0e0e`، نقره‌ای `#e4dfe1`، گرادیان `#b30f4e → #d0283a → #ed4e26`.
 - فایل‌های ثابت: `public/main/images/brand/{mark,mark-mono,mark-white,logo-horizontal,logo-horizontal-mono,logo-horizontal-white,logo-square}.svg`، `og-default.png`، `public/favicon.svg` (کاشی)، `favicon_io/*.png`.
 - **تصویر جایگزین:** `config('brand.placeholder')` = `main/images/brand/placeholder.webp` (کاشی لوگو روی زمینه خاکستری روشن). برای هر کالا، دسته، مقاله یا hero بدون تصویر استفاده شود: `{{ $x->featuredImageUrl ?: asset(config('brand.placeholder')) }}`.

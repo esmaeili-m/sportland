@@ -86,7 +86,7 @@
                 '@type' => 'Organization',
                 '@id' => url('/') . '#organization',
                 'name' => $siteName,
-                'alternateName' => 'Sport Land',
+                'alternateName' => config('brand.name_en_title'),
                 'url' => url('/'),
                 'logo' => $logo ? asset('storage/' . $logo) : asset('main/images/favicon_io/icon-512.png'),
             ],
@@ -147,7 +147,7 @@
                              class="h-9 md:h-14 w-auto max-w-[120px] md:max-w-[160px] object-contain"
                              alt="{{ $siteName }}">
                     @else
-                        <x-brand.logo :name="$siteName"/>
+                        <x-brand.logo/>
                     @endif
                 </a>
             </div>
@@ -210,8 +210,9 @@
                 <div class="flex items-center gap-4">
                     <x-brand.mark tile class="w-14 h-14 shrink-0"/>
                     <span class="flex flex-col leading-none">
-                        <span class="text-2xl font-black text-gray-900 dark:text-white [word-spacing:0.12em]">{{ $siteName }}</span>
-                        <span class="mt-1.5 text-xs font-black tracking-[0.28em] bg-gradient-to-l from-[#b30f4e] to-[#ed4e26] bg-clip-text text-transparent" dir="ltr" lang="en">{{ $siteNameEn }}</span>
+                        <span class="text-2xl font-black text-gray-900 dark:text-white [word-spacing:0.12em]">{{ config('brand.name_lines')[0] }}</span>
+                        <span class="mt-1 text-base font-bold text-gray-600 dark:text-gray-300">{{ config('brand.name_lines')[1] ?? '' }}</span>
+                        <span class="mt-1.5 text-xs font-black tracking-[0.16em] bg-gradient-to-l from-[#b30f4e] to-[#ed4e26] bg-clip-text text-transparent" dir="ltr" lang="en">{{ $siteNameEn }}</span>
                     </span>
                 </div>
                 {{-- متن پیش‌فرض بدون ادعای کیفیت/منشأ؛ متن واقعی «درباره» از پنل > تنظیمات --}}

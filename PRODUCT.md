@@ -34,7 +34,7 @@ web
 
 ## Brand Commitments
 
-- نام برند: «اسپرت لند» — نام لاتین: **Sport Land** (در نشان: SPORT LAND). منبع در کد: `config/brand.php`.
+- نام برند: «اسپرت لند خوشدل» — نام لاتین: **Sport Land Khoshdel** (در لوگو: SPORT LAND KHOSHDEL). منبع در کد: `config/brand.php` (`name`، `name_en`، `name_en_title`، `title`).
 - لحن: پرانرژی، مطمئن، دوستانه و حرفه‌ای؛ بدون اغراق، شعارزدگی یا وعده‌ی غیرواقعی.
 - رنگ: فیروزه‌ای روشن و تیره (درخواست مالک)، با نارنجی مرجانی فقط برای تأکید.
 

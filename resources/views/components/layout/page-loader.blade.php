@@ -9,6 +9,7 @@
 @props(['name' => null, 'latin' => null])
 @php
     $name ??= config('brand.name');
+    [$line1, $line2] = array_pad(config('brand.name_lines'), 2, null);
     $latin ??= config('brand.name_en');
 @endphp
 
@@ -24,7 +25,9 @@ html.dark #sl-loader{--sl-bg:#060b0d;--sl-ink:#f0f4f6;--sl-sub:#a3adb0;--sl-bar:
 #sl-loader .sl-s{animation:sl-s 1.6s cubic-bezier(.2,.8,.2,1) infinite}
 #sl-loader .sl-l{animation:sl-l 1.6s cubic-bezier(.2,.8,.2,1) infinite}
 #sl-loader .sl-name{font-family:payda,Vazirmatn,Tahoma,sans-serif;font-size:28px;font-weight:900;line-height:1.15;word-spacing:.12em;color:var(--sl-ink)}
-#sl-loader .sl-latin{margin-top:-8px;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:900;letter-spacing:.42em;padding-left:.42em;direction:ltr;background:linear-gradient(90deg,#ed4e26,#b30f4e);-webkit-background-clip:text;background-clip:text;color:transparent}
+#sl-loader .sl-sub{display:block;margin-top:2px;font-size:18px;font-weight:700;color:var(--sl-sub)}
+#sl-loader .sl-name{text-align:center}
+#sl-loader .sl-latin{margin-top:-8px;font-family:Arial,Helvetica,sans-serif;font-size:11px;font-weight:900;letter-spacing:.24em;padding-left:.24em;direction:ltr;background:linear-gradient(90deg,#ed4e26,#b30f4e);-webkit-background-clip:text;background-clip:text;color:transparent}
 #sl-loader .sl-bar{width:120px;height:3px;border-radius:3px;background:var(--sl-soft);overflow:hidden}
 #sl-loader .sl-bar span{display:block;width:40%;height:100%;border-radius:3px;background:var(--sl-bar);animation:sl-bar 1.1s cubic-bezier(.65,0,.35,1) infinite}
 @keyframes sl-s{0%{opacity:0;transform:translate(90px,-90px)}30%,85%{opacity:1;transform:none}100%{opacity:0;transform:none}}
@@ -53,7 +56,7 @@ html.dark #sl-loader{--sl-bg:#060b0d;--sl-ink:#f0f4f6;--sl-sub:#a3adb0;--sl-bar:
         </g>
       </g>
     </svg>
-    <div class="sl-name">{{ $name }}</div>
+    <div class="sl-name">{{ $line1 }}@if($line2)<span class="sl-sub">{{ $line2 }}</span>@endif</div>
     @if($latin)
     <div class="sl-latin">{{ $latin }}</div>
     @endif

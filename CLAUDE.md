@@ -1,6 +1,6 @@
 # Sport Land (اسپرت لند) — Project Memory
 
-Sport-goods shop (shoes, sportswear, training gear). Codebase forked from zaracharm → «برنج خطیر» → rebranded to «اسپرت لند | Sport Land» (Oct 2026). Brand name/title live in `config/brand.php`; design tokens + rules in `DESIGN.md`; product context in `PRODUCT.md`; latest rebrand report in `REBRAND_REPORT.md`.
+Sport-goods shop (shoes, sportswear, training gear). Codebase forked from zaracharm → «برنج خطیر» → rebranded to «اسپرت لند خوشدل | Sport Land Khoshdel» (Oct 2026; official SL logo in `public/main/images/brand/logo-original.jpg`, placeholder image via `config('brand.placeholder')`). Brand name/title live in `config/brand.php`; design tokens + rules in `DESIGN.md`; product context in `PRODUCT.md`; latest rebrand report in `REBRAND_REPORT.md`.
 ⚠ `.env` DB is SHARED with `../zaracharm` and `../brenjkhatir` — never write data (seed/migrate/tinker writes/test purchases) from this project until the DB is separated.
 
 Persian (RTL, `APP_LOCALE=fa`) e-commerce shop + page-builder CMS. Mobile/OTP auth, product variants & multi-warehouse inventory, discounts/campaigns/coupons, cart → order → invoice → payment (wallet / card-to-card / gateways). Legacy LMS/services/hospitals/team modules were removed (Oct 2026); blog remains.

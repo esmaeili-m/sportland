@@ -1,7 +1,7 @@
 {
   "schemaVersion": 2,
   "generatedAt": "2026-10-11T21:00:00Z",
-  "title": "Design System: اسپرت لند | Sport Land",
+  "title": "Design System: اسپرت لند خوشدل | Sport Land Khoshdel",
   "extensions": {
     "colorMeta": {
       "primary-600": { "role": "primary", "displayName": "فیروزه‌ای", "canonical": "oklch(50% 0.09 197)", "tonalRamp": ["oklch(21% 0.036 210)", "oklch(29% 0.05 206)", "oklch(36% 0.064 203)", "oklch(43% 0.078 200)", "oklch(50% 0.09 197)", "oklch(54% 0.1 196)", "oklch(74% 0.12 192)", "oklch(82% 0.1 193)", "oklch(89% 0.07 195)", "oklch(97.5% 0.02 195)"] },
