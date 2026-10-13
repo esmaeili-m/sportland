@@ -109,7 +109,7 @@ new class extends Component
 
 <div>
     <section class="relative overflow-hidden  transition-colors duration-500">
-        <div class="container py-4 relative z-10">
+        <div class=" py-4 relative z-10">
             <div class="flex flex-col md:flex-row md:items-end justify-between mb-8 gap-6">
                 <div class="space-y-4">
                     <div class="flex items-center gap-3">
