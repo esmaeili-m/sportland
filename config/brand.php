@@ -25,6 +25,10 @@ return [
     // متن کوتاه فوتر؛ null = متن پیش‌فرض بدون ادعا. TODO(OWNER): متن واقعی معرفی فروشگاه
     'about' => null,
 
+    // لوگوی رسمی (فایل اصلی دریافتی از مالک) و تصویر جایگزین برای کالا/دسته/مقاله‌ی بدون تصویر (مسیر نسبت به public)
+    'logo_original' => 'main/images/brand/logo-original.jpg',
+    'placeholder' => 'main/images/brand/placeholder.webp',
+
     'use_uploaded_logo' => false,
     'use_uploaded_favicon' => false,
 ];

@@ -109,7 +109,7 @@ new class extends Component
                                     </div>
 
                                     <div class="relative mb-6 overflow-hidden rounded-[2rem] h-48 shadow-lg">
-                                        <img src="{{$article->featuredImageUrl}}" class="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110" alt="Blog Title">
+                                        <img src="{{$article->featuredImageUrl ?: asset(config('brand.placeholder')) }}" class="w-full h-full object-cover transition-all duration-1000 group-hover:scale-110" alt="Blog Title">
                                         <div class="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
                                     </div>
 

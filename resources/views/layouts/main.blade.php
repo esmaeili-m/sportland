@@ -208,12 +208,10 @@
 
             <div class="md:col-span-2 lg:col-span-2 space-y-8">
                 <div class="flex items-center gap-4">
-                    <div class="w-14 h-14 bg-primary-600 rounded-2xl flex items-center justify-center">
-                        <x-brand.mark class="w-10 h-10 text-white [--mark-accent:var(--color-secondary-200)]"/>
-                    </div>
+                    <x-brand.mark tile class="w-14 h-14 shrink-0"/>
                     <span class="flex flex-col leading-none">
                         <span class="text-2xl font-black text-gray-900 dark:text-white [word-spacing:0.12em]">{{ $siteName }}</span>
-                        <span class="mt-1.5 text-xs font-bold tracking-[0.28em] text-primary-700 dark:text-primary-300" dir="ltr" lang="en">{{ $siteNameEn }}</span>
+                        <span class="mt-1.5 text-xs font-black tracking-[0.28em] bg-gradient-to-l from-[#b30f4e] to-[#ed4e26] bg-clip-text text-transparent" dir="ltr" lang="en">{{ $siteNameEn }}</span>
                     </span>
                 </div>
                 {{-- متن پیش‌فرض بدون ادعای کیفیت/منشأ؛ متن واقعی «درباره» از پنل > تنظیمات --}}

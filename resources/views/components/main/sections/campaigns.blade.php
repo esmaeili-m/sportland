@@ -193,7 +193,7 @@ new class extends Component
 
                                                         {{-- تصویر محصول: دو حالت — ترنسپرنت / دارای بکگراند --}}
                                                         <div class="relative mb-8 flex items-center justify-center h-48 {{ $imageStyle === 'transparent' ? '' : 'rounded-[2.5rem] bg-gray-50 dark:bg-white/[0.04] overflow-hidden' }}">
-                                                            <img src="{{$product->featuredImageUrl}}"
+                                                            <img src="{{$product->featuredImageUrl ?: asset(config('brand.placeholder')) }}"
                                                                  class="relative z-10 transition-all duration-300 group-hover:scale-105 {{ $imageStyle === 'transparent' ? 'max-w-full max-h-full object-contain drop-shadow-xl' : 'w-full h-full object-cover group-hover:scale-110' }}"
                                                                  alt="{{$product->title}}">
 
@@ -366,11 +366,11 @@ new class extends Component
                                             @if($imageStyle === 'transparent')
                                                 <div class="relative -mt-24 mb-6 transition-transform duration-700 group-hover:scale-110">
                                                     <div class="absolute inset-0 bg-brown-500/20 blur-[60px] rounded-full scale-75"></div>
-                                                    <img src="{{ $product->featuredImageUrl }}" class="w-40 drop-shadow-[0_20px_40px_rgba(0,0,0,0.2)] relative z-10" alt="{{ $product->title }}">
+                                                    <img src="{{ $product->featuredImageUrl ?: asset(config('brand.placeholder')) }}" class="w-40 drop-shadow-[0_20px_40px_rgba(0,0,0,0.2)] relative z-10" alt="{{ $product->title }}">
                                                 </div>
                                             @else
                                                 <div class="relative -mt-24 mb-6 w-40 h-40 rounded-[2rem] overflow-hidden shadow-lg ring-1 ring-inset ring-black/5 dark:ring-white/10 transition-transform duration-700 group-hover:scale-105">
-                                                    <img src="{{ $product->featuredImageUrl }}" class="w-full h-full object-cover" alt="{{ $product->title }}">
+                                                    <img src="{{ $product->featuredImageUrl ?: asset(config('brand.placeholder')) }}" class="w-full h-full object-cover" alt="{{ $product->title }}">
                                                 </div>
                                             @endif
 

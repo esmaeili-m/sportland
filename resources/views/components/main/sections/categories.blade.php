@@ -150,7 +150,7 @@ new class extends Component
 
                                     {{-- Background --}}
                                     <img
-                                        src="{{ $category->featuredImageUrl }}"
+                                        src="{{ $category->featuredImageUrl ?: asset(config('brand.placeholder')) }}"
                                         alt="{{ $category->title }}"
                                         class="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                                     >
@@ -183,7 +183,7 @@ new class extends Component
                                         <div class="absolute inset-0 bg-brown/20 blur-[30px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity"></div>
 
                                         <img
-                                            src="{{ $category->featuredImageUrl }}"
+                                            src="{{ $category->featuredImageUrl ?: asset(config('brand.placeholder')) }}"
                                             alt="{{ $category->title }}"
                                             class="relative z-10 w-40 h-40 md:w-52 md:h-52 object-contain drop-shadow-2xl"
                                         >
@@ -250,11 +250,11 @@ new class extends Component
 
                                         @if($pictureMode === 'transparent')
                                             <div class="absolute -left-10 bottom-3 w-1/2 transform translate-y-10 group-hover:translate-y-0 group-hover:-rotate-6 transition-all duration-700 pointer-events-none">
-                                                <img src="{{$category->featuredImageUrl}}" class="w-full h-auto drop-shadow-[0_20px_40px_rgba(0,0,0,0.2)]" alt="{{ $category->title }}">
+                                                <img src="{{$category->featuredImageUrl ?: asset(config('brand.placeholder')) }}" class="w-full h-auto drop-shadow-[0_20px_40px_rgba(0,0,0,0.2)]" alt="{{ $category->title }}">
                                             </div>
                                         @else
                                             <div class="absolute left-8 bottom-8 w-2/5 aspect-square rounded-[3rem] overflow-hidden shadow-lg ring-1 ring-inset ring-black/5 dark:ring-white/10 transition-all duration-700 group-hover:-rotate-3 group-hover:scale-105 pointer-events-none">
-                                                <img src="{{$category->featuredImageUrl}}" class="w-full h-full object-cover" alt="{{ $category->title }}">
+                                                <img src="{{$category->featuredImageUrl ?: asset(config('brand.placeholder')) }}" class="w-full h-full object-cover" alt="{{ $category->title }}">
                                             </div>
                                         @endif
                                     </div>

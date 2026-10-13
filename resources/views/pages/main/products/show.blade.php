@@ -903,9 +903,7 @@ new class extends Component
                                     {{-- فروشنده و قابلیت‌های واقعی فروشگاه (بدون امتیاز یا وعده‌ی زمان ارسال ساختگی) --}}
                                     <div class="space-y-4">
                                         <a href="{{ route('page.show', 'about-us') }}" class="flex items-center gap-4 group">
-                                            <div class="w-12 h-12 shrink-0 rounded-2xl bg-white dark:bg-white/5 flex items-center justify-center border border-gray-100 dark:border-white/10">
-                                                <x-brand.mark class="w-8 h-8 text-primary-600 dark:text-primary-400 [--mark-accent:var(--color-secondary-500)]"/>
-                                            </div>
+                                            <x-brand.mark tile class="w-12 h-12 shrink-0"/>
                                             <div>
                                                 <p class="text-[14px] font-black text-gray-900 dark:text-white group-hover:text-primary-700 dark:group-hover:text-primary-300 transition-colors">فروشنده: {{ config('brand.name') }}</p>
                                                 <span class="text-[11px] font-bold text-gray-500">درباره فروشگاه</span>
@@ -1280,7 +1278,7 @@ new class extends Component
                                             ></video>
                                         @else
                                             <img
-                                                src="{{ $product->featuredImageUrl }}"
+                                                src="{{ $product->featuredImageUrl ?: asset(config('brand.placeholder')) }}"
                                                 alt="{{ $product->title }}"
                                                 class="relative rounded-[3rem] w-full h-[450px] object-cover border border-white/30 shadow-2xl"
                                             >
@@ -1317,7 +1315,7 @@ new class extends Component
                                     </div>
                                     <div class="hidden lg:block lg:col-span-5 relative">
                                         <div class="absolute -inset-4 bg-brown-600/10 rounded-[4rem] -rotate-3 backdrop-blur-sm"></div>
-                                        <img src="{{$product->featuredImageUrl}}" class="relative rounded-[3rem] shadow-lg shadow-brown-500/10 object-cover h-[400px] w-full border border-white/20" alt="Titanium Frame Detail">
+                                        <img src="{{$product->featuredImageUrl ?: asset(config('brand.placeholder')) }}" class="relative rounded-[3rem] shadow-lg shadow-brown-500/10 object-cover h-[400px] w-full border border-white/20" alt="Titanium Frame Detail">
                                     </div>
                                 </div>
 

@@ -93,7 +93,7 @@ components:
 - فیروزه‌ای تنها رنگ عمل اصلی (دکمه، لینک، حالت فعال، انتخاب سایز/رنگ).
 - خنثی سرد با ته‌رنگ فیروزه‌ای بسیار کم (hue 220).
 - نارنجی مرجانی کم‌مصرف و فقط برای تخفیف و فوریت.
-- نشان: S ایتالیک (مسیر پیست) + سه خط سرعت نارنجی.
+- نشان: مونوگرام SL لوگوی رسمی مالک (S نقره‌ای، L گرادیان سرخابی ← نارنجی، کاشی مشکی با نوار فیروزه‌ای مورب). رنگ‌های لوگو فقط در لوگو و تصویر جایگزین استفاده می‌شوند، نه در رابط سایت.
 - فارسی، RTL، اعداد فارسی (فونت FaNum)، قیمت‌ها tabular.
 
 ## Colors
@@ -162,11 +162,14 @@ components:
 فقط وقتی دکمه‌ی اصلی خرید از دید خارج است (Alpine `x-intersect`)، بالای نوار ناوبری پایین؛ قیمت + دکمه.
 
 ### Page Loader (Signature)
-کاشی فیروزه‌ای با S که کشیده می‌شود و خطوط سرعت نارنجی؛ زیر آن «اسپرت لند» و «SPORT LAND». حالت تیره و reduced-motion. فایل: `resources/views/components/layout/page-loader.blade.php`.
+کاشی لوگوی رسمی (مشکی + نوار فیروزه‌ای)؛ S و L در امتداد شیب لوگو وارد می‌شوند؛ زیر آن «اسپرت لند» و «SPORT LAND» (گرادیان لوگو). حالت تیره و reduced-motion. فایل: `resources/views/components/layout/page-loader.blade.php`.
 
-### Brand assets
-- `<x-brand.mark>` (نشان؛ `--mark-accent` رنگ خطوط سرعت، `:speed="false"` برای اندازه‌های خیلی کوچک) و `<x-brand.logo>` (افقی، متن زنده).
-- فایل‌های ثابت: `public/main/images/brand/{mark,mark-mono,mark-white,logo-horizontal,logo-horizontal-mono,logo-horizontal-white,logo-square}.svg`، `og-default.png` (1200×630)، `public/favicon.svg` (بدون خطوط سرعت)، `public/main/images/favicon_io/*.png` (16، 32، 180، 192، 512، maskable-512).
+### Brand assets (لوگوی رسمی مالک)
+- فایل اصلی دریافتی: `public/main/images/brand/logo-original.jpg` (۱۲۸۰×۱۲۸۰) — منبع آیکون‌های 180/192/512، maskable و تصویر OG.
+- بازسازی برداری مونوگرام SL برای اندازه‌های کوچک: `<x-brand.mark>` (S = currentColor، L گرادیان؛ `tile` = کاشی کامل) و `<x-brand.logo>` (مونوگرام + نام فارسی + SPORT LAND با گرادیان لوگو).
+- رنگ‌های لوگو (فقط لوگو/جایگزین): فیروزه‌ای `#35c3e9`، مشکی `#0e0e0e`، نقره‌ای `#e4dfe1`، گرادیان `#b30f4e → #d0283a → #ed4e26`.
+- فایل‌های ثابت: `public/main/images/brand/{mark,mark-mono,mark-white,logo-horizontal,logo-horizontal-mono,logo-horizontal-white,logo-square}.svg`، `og-default.png`، `public/favicon.svg` (کاشی)، `favicon_io/*.png`.
+- **تصویر جایگزین:** `config('brand.placeholder')` = `main/images/brand/placeholder.webp` (کاشی لوگو روی زمینه خاکستری روشن). برای هر کالا، دسته، مقاله یا hero بدون تصویر استفاده شود: `{{ $x->featuredImageUrl ?: asset(config('brand.placeholder')) }}`.
 
 ## Do's and Don'ts
 

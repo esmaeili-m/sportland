@@ -30,10 +30,8 @@
 
             @if(! $product->featuredImageUrl)
 
-                {{-- بدون تصویر: نشان برند به‌جای تصویر شکسته --}}
-                <div class="absolute inset-0 flex items-center justify-center">
-                    <x-brand.mark :speed="false" class="w-12 h-12 text-gray-300 dark:text-gray-600"/>
-                </div>
+                {{-- بدون تصویر: تصویر جایگزین برند به‌جای تصویر شکسته --}}
+                <img src="{{ asset(config('brand.placeholder')) }}" alt="" loading="lazy" decoding="async" class="absolute inset-0 w-full h-full object-cover">
 
             @elseif($pictureMode === 'background')
 

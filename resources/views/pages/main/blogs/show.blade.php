@@ -300,7 +300,7 @@ new class extends Component
                                 @foreach($last_articles ?? [] as $a)
                                     <li>
                                         <div class="sidebar__post-image">
-                                            <img src="{{$a->featuredImageUrl}}" alt="">
+                                            <img src="{{$a->featuredImageUrl ?: asset(config('brand.placeholder')) }}" alt="">
                                         </div>
                                         <div class="sidebar__post-content">
                                             <ul class="sidebar__post-meta list-unstyled">

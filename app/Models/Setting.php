@@ -43,7 +43,7 @@ class Setting extends Model
 
         return $path
             ? asset('storage/' . $path)
-            : asset('images/default-logo.png');
+            : asset('main/images/brand/logo-square.svg');
     }
     public function getLogoUrlAttribute()
     {

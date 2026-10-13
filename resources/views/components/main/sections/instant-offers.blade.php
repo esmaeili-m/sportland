@@ -121,7 +121,7 @@ new class extends Component
                                     <div class="relative w-28 h-28 flex-shrink-0 overflow-hidden rounded-[1rem] transition-transform duration-700 group-hover/card:scale-105">
 
                                         <img
-                                            src="{{ $product->product->featuredImageUrl }}"
+                                            src="{{ $product->product->featuredImageUrl ?: asset(config('brand.placeholder')) }}"
                                             alt="{{ $product->product->title }}"
                                             class="w-full h-full object-cover transition-all duration-700"
                                         >
@@ -134,7 +134,7 @@ new class extends Component
                                     <div class="relative w-28 h-28 bg-gray-50 dark:bg-white/5 rounded-[2.2rem] flex-shrink-0 p-3 overflow-hidden transition-transform duration-700 group-hover/card:scale-105">
 
                                         <img
-                                            src="{{ $product->product->featuredImageUrl }}"
+                                            src="{{ $product->product->featuredImageUrl ?: asset(config('brand.placeholder')) }}"
                                             alt="{{ $product->product->title }}"
                                             class="w-full h-full object-contain drop-shadow-[0_10px_20px_rgba(0,0,0,0.1)] transition-all duration-700"
                                         >
@@ -207,7 +207,7 @@ new class extends Component
 
                             {{-- تصویر با پس‌زمینه --}}
                             <img
-                                src="{{ $product->product->featuredImageUrl }}"
+                                src="{{ $product->product->featuredImageUrl ?: asset(config('brand.placeholder')) }}"
                                 alt="{{ $product->product->title }}"
                                 class="relative z-10 w-full h-full object-cover rounded-2xl group-hover:scale-105 transition-transform duration-500"
                             >
@@ -216,7 +216,7 @@ new class extends Component
 
                             {{-- تصویر بدون پس‌زمینه (ترنسپرنت) --}}
                             <img
-                                src="{{ $product->product->featuredImageUrl }}"
+                                src="{{ $product->product->featuredImageUrl ?: asset(config('brand.placeholder')) }}"
                                 alt="{{ $product->product->title }}"
                                 class="relative z-10 w-full h-full object-contain group-hover:scale-110 transition-transform duration-500"
                             >

@@ -652,7 +652,7 @@ new class extends Component
                             <div class="flex gap-4 mb-10 overflow-x-auto pb-4 ps-3">
                                 @foreach ($this->orderItems as $item)
                                     <div class="flex-shrink-0 w-20 h-20 bg-white dark:bg-white/5 rounded-3xl border border-white/60 dark:border-white/10 p-2 relative">
-                                        <img src="{{ $item->variant->product->main_image_url ?? asset('assets/images/product/default.png') }}"
+                                        <img src="{{ $item->variant?->product?->featuredImageUrl ?: asset(config('brand.placeholder')) }}"
                                              class="w-full h-full object-contain rounded-2xl" alt="{{ $item->product_name }}">
                                         <span class="absolute -bottom-2 -right-2 bg-gray-800 text-white text-[10px] font-black px-2 py-1 rounded-lg">{{ $item->quantity }} عدد</span>
                                     </div>
