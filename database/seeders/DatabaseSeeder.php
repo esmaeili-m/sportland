@@ -19,8 +19,9 @@ class DatabaseSeeder extends Seeder
             UserTableSeeder::class,
             CategorySeeder::class,
             TagTableSeeder::class,
-            PageTableSeeder::class,
+            // رجیستری سکشن‌ها قبل از صفحات پیش‌فرض (غیرمخرب)
             SectionTableSeeder::class,
+            PageTableSeeder::class,
             ShippingSlotSeeder::class,
             RewardLevelSeeder::class,
         ]);
