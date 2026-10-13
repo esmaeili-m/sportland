@@ -20,7 +20,9 @@ new class extends Component
                     ->select([
                         'categories.id',
                         'categories.title',
+                        'categories.slug',
                     ])
+                    ->where('categories.status', true)
                     ->join(
                         'category_product',
                         'category_product.category_id',
@@ -43,6 +45,7 @@ new class extends Component
                     ->groupBy([
                         'categories.id',
                         'categories.title',
+                        'categories.slug',
                     ])
                     ->orderByDesc('total_sales')
                     ->take($data['limit'] ?? 6)
@@ -52,7 +55,9 @@ new class extends Component
                     ->select([
                         'categories.id',
                         'categories.title',
+                        'categories.slug',
                     ])
+                    ->where('categories.status', true)
                     ->join(
                         'category_product',
                         'category_product.category_id',
@@ -76,25 +81,26 @@ new class extends Component
                     ->groupBy([
                         'categories.id',
                         'categories.title',
+                        'categories.slug',
                     ])
                     ->orderByDesc('total_views')
                     ->take($data['limit'] ?? 6)
                     ->get();
             } elseif ($data['mode'] == 'random') {
 
-                $this->categories = Category::query()->inRandomOrder()->whereNull('parent_id')
+                $this->categories = Category::query()->active()->inRandomOrder()->whereNull('parent_id')
                     ->take($data['limit'] ?? 6)
                     ->get();
             }elseif ($data['mode'] == 'latest') {
-                $this->categories = Category::query()->orderBy('sort')->latest()->whereNull('parent_id')
+                $this->categories = Category::query()->active()->orderBy('sort')->latest()->whereNull('parent_id')
                     ->take($data['limit'] ?? 6)
                     ->get();
 
             }elseif ($data['mode'] == 'all') {
-                $this->categories = Category::query()->orderBy('sort')->latest()->get();
+                $this->categories = Category::query()->active()->orderBy('sort')->latest()->get();
             } else {
 
-                $this->categories = Category::whereIn(
+                $this->categories = Category::active()->whereIn(
                     'id',
                     $data['category_ids'] ?? []
                 )
@@ -125,7 +131,7 @@ new class extends Component
                 </div>
 
 
-                <a href="/categories" class="group/link relative overflow-hidden px-8 py-3.5 rounded-2xl transition-all duration-500 flex items-center gap-3 bg-white/40 backdrop-blur-md border border-gray-200 text-gray-800 hover:border-brown-500/50 hover:text-white dark:bg-white/[0.03] dark:border-white/10 dark:text-gray-300 dark:hover:text-white">
+                <a href="{{ route('page.show', 'categories') }}" class="group/link relative overflow-hidden px-8 py-3.5 rounded-2xl transition-all duration-500 flex items-center gap-3 bg-white/40 backdrop-blur-md border border-gray-200 text-gray-800 hover:border-brown-500/50 hover:text-white dark:bg-white/[0.03] dark:border-white/10 dark:text-gray-300 dark:hover:text-white">
 
                     <span class="absolute inset-0 bg-brown-600 translate-y-full group-hover/link:translate-y-0 transition-transform duration-500 ease-out"></span>
 
@@ -144,7 +150,7 @@ new class extends Component
                     @foreach($categories ?? [] as $category)
                         @if($pictureMode === 'background')
                             {{-- Background Image --}}
-                            <a href="#" class="group relative flex flex-col items-center">
+                            <a href="{{ route('categories.show', $category->slug) }}" class="group relative flex flex-col items-center">
 
                                 <div class="relative w-full aspect-square max-w-[220px] overflow-hidden rounded-[3rem] mb-6">
 
@@ -171,7 +177,7 @@ new class extends Component
                         @else
 
                             {{-- Transparent Image --}}
-                            <a href="#" class="group relative flex flex-col items-center">
+                            <a href="{{ route('categories.show', $category->slug) }}" class="group relative flex flex-col items-center">
 
                                 <div class="relative w-full aspect-square max-w-[220px] flex items-center justify-center mb-6">
 
@@ -242,7 +248,7 @@ new class extends Component
                                             <h2 class="text-4xl font-black text-gray-900 dark:text-white leading-tight">{{$category->title}}</h2>
                                             <p class="text-sm text-gray-600 dark:text-gray-400 leading-8">{{$category->short_description}}</p>
 
-                                            <a href="#" class="inline-flex items-center gap-3 text-gray-900 dark:text-white font-black text-sm group-hover:gap-5 transition-all">
+                                            <a href="{{ route('categories.show', $category->slug) }}" class="inline-flex items-center gap-3 text-gray-900 dark:text-white font-black text-sm group-hover:gap-5 transition-all">
                                                 مشاهده محصولات
                                                 <svg class="w-5 h-5 bg-brown-600 text-white rounded-full p-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"></path></svg>
                                             </a>
