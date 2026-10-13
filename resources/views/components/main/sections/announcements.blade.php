@@ -9,7 +9,7 @@ use Livewire\Component;
  */
 new class extends Component
 {
-    public array $data = [];
+    public ?array $data = []; // سکشن تازه‌اضافه‌شده (بدون تنظیمات) data = null دارد
     public $items;
 
     public function mount($data = [], $media = null)

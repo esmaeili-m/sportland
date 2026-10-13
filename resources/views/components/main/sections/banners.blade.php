@@ -10,7 +10,7 @@ use Livewire\Component;
  */
 new class extends Component
 {
-    public array $data = [];
+    public ?array $data = []; // سکشن تازه‌اضافه‌شده (بدون تنظیمات) data = null دارد
     public array $banners = [];
     public string $uid;
 
