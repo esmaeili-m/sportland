@@ -579,7 +579,7 @@ new class extends Component
 
     <section class="relative py-16 transition-colors duration-700">
 
-        <div class="container">
+        <div class="">
 
             <div class="mb-12">
 
