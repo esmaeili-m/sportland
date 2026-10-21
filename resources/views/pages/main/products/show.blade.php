@@ -27,12 +27,14 @@ new class extends Component
     public function mount($product)
     {
         $this->product = Product::active()->where('slug',$product)
-            ->with(['variants.optionValues','primaryCategory','comments','specifications'])
+            ->with(['variants.optionValues', 'variants.values', 'variants.inventoryItems.inventory', 'options', 'primaryCategory', 'comments', 'specifications'])
             ->first();
         if (!$this->product){
             abort(404);
         }
-        $this->selectedVariant = $this->product->cheapestVariant
+        // همان نمونه‌ی داخل variants (با روابط بارگذاری‌شده‌ی مقدارها و موجودی)
+        $cheapestId = $this->product->cheapestVariant?->id;
+        $this->selectedVariant = $this->product->variants->firstWhere('id', $cheapestId)
             ?? $this->product->variants->first();
 
         // سایز باید آگاهانه انتخاب شود؛ اگر محصول ویژگی سایز ندارد یا فقط یک سایز دارد، نیازی نیست
@@ -704,7 +706,8 @@ new class extends Component
                             </div>
 
                             {{-- Main gallery --}}
-                            <div class="swiper productMainSwiper h-[200px] md:h-[450px] swiper-initialized swiper-horizontal swiper-rtl swiper-backface-hidden">
+                            {{-- wire:ignore: گالری به واریانت وابسته نیست؛ بدون آن رندر مجدد Livewire وضعیت Swiper را پاک می‌کند --}}
+                            <div wire:ignore class="swiper productMainSwiper h-[200px] md:h-[450px]">
                                 <div class="swiper-wrapper">
                                     @foreach($product->media()->get() ?? [] as $img)
                                         <div class="swiper-slide">
@@ -728,15 +731,14 @@ new class extends Component
 
                         {{-- Thumbnails --}}
                         <div class="w-full max-w-[400px]">
-                            <div class="swiper productThumbsSwiper !pb-5 swiper-initialized swiper-horizontal swiper-free-mode swiper-rtl swiper-watch-progress swiper-backface-hidden swiper-thumbs">
-                                <div class="swiper-wrapper" id="swiper-wrapper-c574f2f1c7b9375d" aria-live="polite" style="transform: translate3d(0px, 0px, 0px);">
+                            <div wire:ignore class="swiper productThumbsSwiper !pb-5">
+                                <div class="swiper-wrapper">
                                     @foreach($product->media()->whereNull('external_url')->get() ?? [] as $img)
-                                        <div class="swiper-slide shadow-lg cursor-pointer rounded-[1.5rem] border-2 border-transparent bg-white/40 dark:bg-white/5 p-2 transition-all opacity-40 overflow-hidden swiper-slide-visible swiper-slide-fully-visible swiper-slide-active swiper-slide-thumb-active" style="width: 88.75px; margin-left: 15px;" role="group" aria-label="1 / 6">
+                                        <div class="swiper-slide shadow-lg cursor-pointer rounded-[1.5rem] border-2 border-transparent bg-white/40 dark:bg-white/5 p-2 transition-all opacity-40 overflow-hidden">
                                             <img src="{{asset('storage/'.$img->file_path)}}" class="w-full aspect-square object-contain" alt="thumb">
                                         </div>
                                     @endforeach
                                 </div>
-                                <span class="swiper-notification" aria-live="assertive" aria-atomic="true"></span>
                             </div>
                         </div>
                     </div>
@@ -835,12 +837,14 @@ new class extends Component
                                                     @if($isColor)
                                                         <button type="button"
                                                                 wire:click="selectOption({{ $item->id }})"
+                                                                wire:loading.attr="disabled" wire:target="selectOption"
                                                                 @disabled($valueOut)
                                                                 aria-pressed="{{ $isActive ? 'true' : 'false' }}"
                                                                 aria-label="{{ $label }}"
                                                                 title="{{ $label }}"
                                                                 class="relative w-11 h-11 rounded-full p-1 border-2 transition-colors {{ $isActive ? 'border-primary-600 dark:border-primary-400' : 'border-gray-200 dark:border-white/10 hover:border-gray-400' }} {{ $valueOut ? 'opacity-40' : '' }}">
                                                             <span class="block w-full h-full rounded-full border border-black/10" style="background-color: {{ preg_match('/^#[0-9a-fA-F]{3,8}$/', (string) $item->color_code) ? $item->color_code : '#d1d5db' }}"></span>
+                                                            <span wire:loading.flex wire:target="selectOption({{ $item->id }})" class="absolute inset-0 items-center justify-center rounded-full bg-white/70 dark:bg-black/50 text-primary-700 dark:text-primary-300"><svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg></span>
                                                             @if($valueOut)
                                                                 <span class="absolute inset-0 m-auto w-[2px] h-[120%] bg-gray-500 rotate-45 rounded-full" aria-hidden="true"></span>
                                                             @endif
@@ -848,14 +852,16 @@ new class extends Component
                                                     @else
                                                         <button type="button"
                                                                 wire:click="selectOption({{ $item->id }})"
+                                                                wire:loading.attr="disabled" wire:target="selectOption"
                                                                 @disabled($valueOut)
                                                                 aria-pressed="{{ $isActive ? 'true' : 'false' }}"
                                                                 aria-label="{{ $label }}"
-                                                                class="option-btn min-w-12 min-h-11 px-4 rounded-xl border-2 text-sm font-bold tabular-nums transition-colors
+                                                                class="option-btn relative min-w-12 min-h-11 px-4 rounded-xl border-2 text-sm font-bold tabular-nums transition-colors
                                                                     {{ $isActive ? 'border-primary-600 bg-primary-50 text-primary-800 dark:border-primary-400 dark:bg-primary-500/10 dark:text-primary-200' : 'border-gray-200 bg-white text-gray-800 hover:border-gray-400 dark:border-white/10 dark:bg-white/5 dark:text-gray-200' }}
                                                                     {{ $valueOut ? 'opacity-40 line-through cursor-not-allowed hover:border-gray-200' : '' }}
                                                                     {{ ! $valueOut && ! $comboInStock ? 'border-dashed' : '' }}">
-                                                            {{ $item->title }}
+                                                            <span wire:loading.class="invisible" wire:target="selectOption({{ $item->id }})">{{ $item->title }}</span>
+                                                            <span wire:loading.flex wire:target="selectOption({{ $item->id }})" class="absolute inset-0 items-center justify-center"><svg class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"/><path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"/></svg></span>
                                                         </button>
                                                     @endif
                                                 @endforeach
@@ -929,7 +935,7 @@ new class extends Component
                                     @if($inStock)
 
                                         {{-- Price --}}
-                                        <div class="space-y-2 pt-4 border-t border-gray-200 dark:border-white/5">
+                                        <div class="space-y-2 pt-4 border-t border-gray-200 dark:border-white/5 transition-opacity" wire:loading.class="opacity-40" wire:target="selectOption">
                                             @if($pricing['has_discount'])
                                                 <div class="flex items-center justify-between">
                                                     <span class="text-xs font-bold text-gray-500 line-through tabular-nums">
@@ -950,7 +956,7 @@ new class extends Component
                                         </div>
 
                                         {{-- Add to cart (نوار چسبان موبایل وقتی این دکمه از دید خارج شود نمایش داده می‌شود) --}}
-                                        <button type="button" wire:click="addToCart" wire:loading.attr="disabled" wire:target="addToCart" id="add-to-cart-btn"
+                                        <button type="button" wire:click="addToCart" wire:loading.attr="disabled" wire:target="addToCart, selectOption" id="add-to-cart-btn"
                                                 x-data x-intersect:leave="$dispatch('buy-box-hidden', true)" x-intersect:enter="$dispatch('buy-box-hidden', false)"
                                                 class="w-full h-14 bg-brown-600 hover:bg-brown-700 text-white rounded-2xl font-black text-sm flex items-center justify-center gap-3 disabled:opacity-70">
                                             <span wire:loading.remove wire:target="addToCart">{{ $sizeChosen ? 'افزودن به سبد خرید' : 'انتخاب سایز و افزودن به سبد' }}</span>
@@ -1018,7 +1024,7 @@ new class extends Component
                         <span class="text-base font-black text-gray-900 dark:text-white tabular-nums">{{ number_format($pricing['after_discount']) }}</span>
                         <span class="text-[11px] font-bold text-gray-500">تومان</span>
                     </div>
-                    <button type="button" wire:click="addToCart" wire:loading.attr="disabled" wire:target="addToCart"
+                    <button type="button" wire:click="addToCart" wire:loading.attr="disabled" wire:target="addToCart, selectOption"
                             class="h-12 px-5 shrink-0 bg-brown-600 text-white rounded-xl font-black text-sm disabled:opacity-70">
                         {{ $sizeChosen ? 'افزودن به سبد' : 'انتخاب سایز' }}
                     </button>
